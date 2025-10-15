@@ -2,12 +2,15 @@ fields:
 - name: client_id
   mode: NULLABLE
   type: STRING
-  description: A unique identifier (UUID) for the client.
+  description: A unique identifier for the user, client, or customer. Format may vary
+    by system (UUID for telemetry clients, hexadecimal for FxA accounts, integer for
+    subscription systems).
 - name: sample_id
   mode: NULLABLE
   type: INTEGER
-  description: A number, 0-99, that samples by client_id and allows filtering data
-    for analysis. It is a pipeline-generated artifact that should match between pings.
+  description: A pipeline-generated sample ID ranging from 0-99, derived by hashing
+    client_id. Used for sampling and filtering data during analysis. This value should
+    remain consistent across pings for the same client.
 - name: as_of_date
   mode: NULLABLE
   type: DATE
@@ -17,7 +20,8 @@ fields:
 - name: first_seen_date
   mode: NULLABLE
   type: DATE
-  description: First submission date that this client was seen on.
+  description: The first date on which a client was observed submitting telemetry
+    data. This represents the earliest known activity date for the client.
 - name: days_since_first_seen
   mode: NULLABLE
   type: INTEGER

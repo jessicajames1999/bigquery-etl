@@ -1,18 +1,23 @@
 fields:
-- description: A unique identifier (UUID) for the client.
+- description: A unique identifier for the user, client, or customer. Format may vary
+    by system (UUID for telemetry clients, hexadecimal for FxA accounts, integer for
+    subscription systems).
   mode: NULLABLE
   name: client_id
   type: STRING
-- description: The date when the telemetry ping is received on the server side.
+- description: The date when the telemetry ping or event data was received on the
+    server side. This is typically used as the partition key for the table.
   mode: NULLABLE
   name: submission_date
   type: DATE
-- description: A number, 0-99, that samples by client_id and allows filtering data
-    for analysis. It is a pipeline-generated artifact that should match between pings.
+- description: A pipeline-generated sample ID ranging from 0-99, derived by hashing
+    client_id. Used for sampling and filtering data during analysis. This value should
+    remain consistent across pings for the same client.
   mode: NULLABLE
   name: sample_id
   type: INTEGER
-- description: First Seen Date
+- description: The first date on which a client was observed submitting telemetry
+    data. This represents the earliest known activity date for the client.
   mode: NULLABLE
   name: first_seen_date
   type: DATE
@@ -36,19 +41,27 @@ fields:
   - mode: NULLABLE
     name: source
     type: STRING
-    description: Attribution Source
+    description: Traffic source or referrer, typically derived from the utm_source
+      URL parameter. Identifies the specific site, service, or location that referred
+      the user (e.g., google, facebook, newsletter).
   - mode: NULLABLE
     name: medium
     type: STRING
-    description: Attribution Medium
+    description: Marketing channel or medium, typically derived from the utm_medium
+      URL parameter. Describes the general category of traffic source (e.g., cpc,
+      email, social, organic).
   - mode: NULLABLE
     name: campaign
     type: STRING
-    description: Attribution Campaign
+    description: Marketing campaign identifier, typically derived from the utm_campaign
+      URL parameter or attribution data. Used to track the marketing campaign associated
+      with user acquisition.
   - mode: NULLABLE
     name: content
     type: STRING
-    description: Attribution Content
+    description: Specific content or creative variant identifier, typically derived
+      from the utm_content URL parameter. Used to differentiate similar content or
+      links within the same campaign.
   - mode: NULLABLE
     name: experiment
     type: STRING
@@ -77,7 +90,8 @@ fields:
   mode: NULLABLE
   name: active
   type: INTEGER
-- description: Ad Clicks
+- description: Number of clicks on advertisements. May represent total clicks, clicks
+    within a specific time period, or sponsored content clicks depending on context.
   mode: NULLABLE
   name: ad_clicks
   type: INTEGER

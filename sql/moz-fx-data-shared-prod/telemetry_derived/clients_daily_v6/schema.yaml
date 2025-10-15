@@ -1,9 +1,12 @@
 fields:
-- description: The date when the telemetry ping is received on the server side.
+- description: The date when the telemetry ping or event data was received on the
+    server side. This is typically used as the partition key for the table.
   mode: NULLABLE
   name: submission_date
   type: DATE
-- description: A unique identifier (UUID) for the client.
+- description: A unique identifier for the user, client, or customer. Format may vary
+    by system (UUID for telemetry clients, hexadecimal for FxA accounts, integer for
+    subscription systems).
   mode: NULLABLE
   name: client_id
   type: STRING
@@ -120,25 +123,34 @@ fields:
   mode: NULLABLE
   name: app_name
   type: STRING
-- description: User visible version string (e.g. "1.0.3") for the browser.
+- description: The user-visible version string of the application (e.g., "1.0.3",
+    "115.0"). For some tables, this may represent only the major version number.
   mode: NULLABLE
   name: app_version
   type: STRING
 - description: null
   fields:
-  - description: null
+  - description: Traffic source or referrer, typically derived from the utm_source
+      URL parameter. Identifies the specific site, service, or location that referred
+      the user (e.g., google, facebook, newsletter).
     mode: NULLABLE
     name: source
     type: STRING
-  - description: null
+  - description: Marketing channel or medium, typically derived from the utm_medium
+      URL parameter. Describes the general category of traffic source (e.g., cpc,
+      email, social, organic).
     mode: NULLABLE
     name: medium
     type: STRING
-  - description: null
+  - description: Marketing campaign identifier, typically derived from the utm_campaign
+      URL parameter or attribution data. Used to track the marketing campaign associated
+      with user acquisition.
     mode: NULLABLE
     name: campaign
     type: STRING
-  - description: null
+  - description: Specific content or creative variant identifier, typically derived
+      from the utm_content URL parameter. Used to differentiate similar content or
+      links within the same campaign.
     mode: NULLABLE
     name: content
     type: STRING
@@ -164,7 +176,9 @@ fields:
   mode: NULLABLE
   name: blocklist_enabled
   type: BOOLEAN
-- description: The normalized channel the application is being distributed on.
+- description: The release channel on which the application is distributed (e.g.,
+    release, beta, nightly, developer edition). Normalized for consistency across
+    products.
   mode: NULLABLE
   name: channel
   type: STRING
@@ -272,7 +286,9 @@ fields:
   mode: NULLABLE
   name: devtools_toolbox_opened_count_sum
   type: INTEGER
-- description: The distribution id associated with the install of Firefox.
+- description: Identifier for the Firefox distribution channel or partner associated
+    with this installation. Used to track installations from specific distribution
+    agreements.
   mode: NULLABLE
   name: distribution_id
   type: STRING
@@ -337,8 +353,9 @@ fields:
   mode: NULLABLE
   name: flash_version
   type: STRING
-- description: Code of the country in which the activity took place, as determined
-    by the IP geolocation.
+- description: ISO 3166-1 alpha-2 country code (two-letter abbreviation) indicating
+    the country where the activity took place, typically determined by IP geolocation.
+    Unknown or NULL values are normally stored as '??'.
   mode: NULLABLE
   name: country
   type: STRING
@@ -513,8 +530,8 @@ fields:
   mode: NULLABLE
   name: install_year
   type: INTEGER
-- description: A flag indicating whether the browser is set as the default browser
-    on the client side.
+- description: Boolean flag indicating whether the browser is configured as the default
+    browser on the user's device.
   mode: NULLABLE
   name: is_default_browser
   type: BOOLEAN
@@ -522,7 +539,8 @@ fields:
   mode: NULLABLE
   name: is_wow64
   type: BOOLEAN
-- description: Set of language- and/or country-based preferences for a user interface.
+- description: Language and/or country-based locale setting that defines the user's
+    interface preferences (e.g., en-US, fr-FR).
   mode: NULLABLE
   name: locale
   type: STRING
@@ -530,7 +548,9 @@ fields:
   mode: NULLABLE
   name: memory_mb
   type: INTEGER
-- description: The normalized channel the application is being distributed on.
+- description: The release channel on which the application is distributed (e.g.,
+    release, beta, nightly, developer edition). Normalized for consistency across
+    products.
   mode: NULLABLE
   name: normalized_channel
   type: STRING
@@ -538,7 +558,8 @@ fields:
   mode: NULLABLE
   name: normalized_os_version
   type: STRING
-- description: The normalized name of the operating system running at the client.
+- description: The normalized name of the operating system running on the client device
+    (e.g., Windows, macOS, iOS, Android).
   mode: NULLABLE
   name: os
   type: STRING
@@ -603,8 +624,9 @@ fields:
   mode: NULLABLE
   name: push_api_notify_sum
   type: INTEGER
-- description: A number, 0-99, that samples by client_id and allows filtering data
-    for analysis. It is a pipeline-generated artifact that should match between pings.
+- description: A pipeline-generated sample ID ranging from 0-99, derived by hashing
+    client_id. Used for sampling and filtering data during analysis. This value should
+    remain consistent across pings for the same client.
   mode: NULLABLE
   name: sample_id
   type: INTEGER
@@ -757,7 +779,9 @@ fields:
   mode: NULLABLE
   name: search_count_urlbar
   type: INTEGER
-- description: null
+- description: Total number of searches performed by the user. This may include all
+    search types or be filtered to specific search sources depending on the table
+    context.
   mode: NULLABLE
   name: search_count_all
   type: INTEGER
@@ -875,11 +899,13 @@ fields:
   mode: NULLABLE
   name: submission_timestamp_min
   type: TIMESTAMP
-- description: null
+- description: Number of clicks on advertisements. May represent total clicks, clicks
+    within a specific time period, or sponsored content clicks depending on context.
   mode: NULLABLE
   name: ad_clicks_count_all
   type: INTEGER
-- description: null
+- description: Number of search queries that returned results including advertisements.
+    Used as a monetization metric.
   mode: NULLABLE
   name: search_with_ads_count_all
   type: INTEGER
@@ -1410,6 +1436,8 @@ fields:
   mode: REPEATED
   name: ad_clicks
   type: RECORD
+  description: Number of clicks on advertisements. May represent total clicks, clicks
+    within a specific time period, or sponsored content clicks depending on context.
 - fields:
   - mode: NULLABLE
     name: key
