@@ -1,0 +1,8 @@
+This is a sample test file for demonstration purposes.
+
+This PR demonstrates:
+- Creating a new branch
+- Adding a test file
+- Submitting a pull request
+
+Test timestamp: 2025-01-09
