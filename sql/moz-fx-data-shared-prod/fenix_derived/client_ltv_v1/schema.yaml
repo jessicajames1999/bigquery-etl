@@ -2,12 +2,12 @@ fields:
 - name: client_id
   mode: NULLABLE
   type: STRING
-  description: A unique identifier (UUID) for the client.
+  description: A unique identifier (UUID) for the client installation
 - name: sample_id
   mode: NULLABLE
   type: INTEGER
-  description: A number, 0-99, that samples by client_id and allows filtering data
-    for analysis. It is a pipeline-generated artifact that should match between pings.
+  description: Sample identifier (0-99) used to partition clients for analysis, generated
+    by the data pipeline based on client_id and consistent across pings
 - name: as_of_date
   mode: NULLABLE
   type: DATE

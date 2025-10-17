@@ -8,6 +8,8 @@ fields:
 - mode: NULLABLE
   name: country
   type: STRING
+  description: Two-letter ISO 3166-1 alpha-2 country code where the user activity
+    occurred, determined by IP geolocation (unknown values may be stored as '??')
 - mode: NULLABLE
   name: device
   type: STRING
