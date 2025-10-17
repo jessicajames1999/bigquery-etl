@@ -11,7 +11,8 @@ fields:
   - name: country
     type: STRING
     mode: NULLABLE
-    description: Two-letter country code (ISO 3166-1 alpha-2).
+    description: Two-letter ISO 3166-1 alpha-2 country code where the user activity
+      occurred, determined by IP geolocation (unknown values may be stored as '??')
   - name: postal_code
     type: STRING
     mode: NULLABLE
