@@ -18,7 +18,8 @@ fields:
 - name: country
   type: STRING
   mode: NULLABLE
-  description: Country
+  description: Two-letter ISO 3166-1 alpha-2 country code where the user activity
+    occurred, determined by IP geolocation (unknown values may be stored as '??')
 - name: adjust_network
   type: STRING
   mode: NULLABLE
@@ -26,7 +27,8 @@ fields:
 - name: is_default_browser
   type: BOOLEAN
   mode: NULLABLE
-  description: A flag indicating whether the browser is set as the default browser on the client side.
+  description: A flag indicating whether the browser is set as the default browser
+    on the client side.
 - name: logins_deleted_users
   type: INTEGER
   mode: NULLABLE
