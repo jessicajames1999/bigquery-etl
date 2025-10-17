@@ -2,160 +2,120 @@ fields:
 - mode: NULLABLE
   name: submission_date
   type: DATE
-  description: The date when the telemetry ping is received on the server side.
+  description: The partition key representing the date when telemetry pings were received on the server side. This date drives the incremental daily update process and must be included in WHERE clauses due to partition filter requirement. All user counts in each row reflect activity relative to this date.
 - name: first_seen_year
   type: INTEGER
   mode: NULLABLE
-  description: Year extracted from the first_seen_date, that corresponds to the date
-    when the first ping was received.
+  description: The year extracted from the user's first_seen_date, indicating when the client first sent a ping to Mozilla's telemetry system. This dimension enables cohort analysis by tracking user acquisition year and analyzing retention patterns over time.
 - name: channel
   type: STRING
   mode: NULLABLE
-  description: The normalized channel the application is being distributed on.
+  description: The normalized release channel of Firefox Desktop (e.g., "release", "beta", "nightly", "esr"). This dimension groups users by their update channel, critical for pre-release testing analysis and version rollout monitoring.
 - name: app_name
   type: STRING
   mode: NULLABLE
-  description: 'App name (Firefox Desktop), if client comes from MozillaOnline distribution
-
-    then the distribution_id is appended to the app_name. If client comes from BrowserStack
-    (isp)
-
-    this is appended to the app_name.
-
-    '
+  description: The application name, typically "Firefox Desktop". For clients from MozillaOnline distribution (China market), the distribution_id is appended to differentiate the distribution variant. BrowserStack ISP indicators are also appended when applicable for testing traffic identification.
 - name: country
   type: STRING
   mode: NULLABLE
-  description: Code of the country in which the activity took place, as determined
-    by the IP geolocation. Unknown or NULL values are normally stored as '??'.
+  description: ISO country code derived from IP geolocation indicating where the activity occurred. Unknown locations are stored as "??". This is a clustering key optimized for geographic segmentation queries and regional analysis.
 - name: city
   type: STRING
   mode: NULLABLE
-  description: City reported by the client.
+  description: City name reported by the client's geolocation data, providing granular geographic analysis capability for urban vs. rural usage patterns and city-level market penetration studies.
 - name: locale
   type: STRING
   mode: NULLABLE
-  description: Set of language- and/or country-based preferences for a user interface.
+  description: The language and regional settings configured in the user's Firefox instance (e.g., "en-US", "de-DE"). This captures user language preferences and enables localization effectiveness analysis.
 - name: os
   type: STRING
   mode: NULLABLE
-  description: The normalized name of the operating system running at the client.
+  description: The normalized operating system name (e.g., "Windows", "Mac", "Linux") running the Firefox client. This standardized field enables consistent cross-platform comparisons.
 - name: os_grouped
   type: STRING
   mode: NULLABLE
-  description: Operating system group reported by the client.
+  description: A higher-level grouping of operating systems that consolidates OS variants into broader categories for simplified platform analysis and reporting.
 - name: os_version
   type: STRING
   mode: NULLABLE
-  description: OS version reported by the client.
+  description: The full operating system version string reported by the client (e.g., "10.0.19041"). This enables detailed OS version distribution analysis and compatibility tracking.
 - name: os_version_major
   type: INTEGER
   mode: NULLABLE
-  description: Major or first part of the operating system version running at the
-    client. E.g. for version "100.9.11", the major is 100.
+  description: The major version number extracted from os_version (e.g., 10 from "10.0.19041"). Useful for analyzing adoption of major OS releases and system requirements planning.
 - name: os_version_minor
   type: INTEGER
   mode: NULLABLE
-  description: Minor part of the operating system version running at the client. E.g.
-    for version "100.9.11", the minor is 9.
+  description: The minor version number extracted from os_version (e.g., 0 from "10.0.19041"). Provides additional granularity for OS version segmentation.
 - name: os_version_build
   type: STRING
   mode: NULLABLE
-  description: OS version build reported by the client.
+  description: The build identifier portion of the OS version, capturing detailed build information for precise version tracking and compatibility analysis.
 - name: windows_build_number
   type: INTEGER
   mode: NULLABLE
-  description: 'The optional Windows build number, reported by Windows (e.g. 22000)
-    and not set for other platforms (Windows only).'
+  description: Windows-specific build number (e.g., 22000 for Windows 11). This field is NULL for non-Windows platforms and enables Windows version detection and Windows 10 vs. 11 differentiation.
 - name: app_version
   type: STRING
   mode: NULLABLE
-  description: User visible version string (e.g. "1.0.3") for the browser.
+  description: The user-facing Firefox version string (e.g., "115.0.1"). This full version identifier enables precise version tracking and update adoption monitoring.
 - name: app_version_major
   type: NUMERIC
   mode: NULLABLE
-  description: 'The major version of the application version (e.g. if 123.0, then
-    123)'
+  description: The major version number (e.g., 115 from "115.0.1"). This is the primary dimension for tracking Firefox major release adoption and measuring version update rates.
 - name: app_version_minor
   type: NUMERIC
   mode: NULLABLE
-  description: 'The minor version of the application version (e.g. if 123.0, then
-    0)'
+  description: The minor version number (e.g., 0 from "115.0.1"). Captures point releases within a major version for detailed update tracking.
 - name: app_version_patch_revision
   type: NUMERIC
   mode: NULLABLE
-  description: 'The patch revision number of the app version'
+  description: The patch or revision number from the version string, identifying hotfixes and security updates within minor versions.
 - name: app_version_is_major_release
   type: BOOLEAN
   mode: NULLABLE
-  description: 'Boolean flag indicating if the app version was a major release'
+  description: Boolean flag indicating whether the app_version represents a major release milestone. TRUE for x.0 versions, useful for filtering major release adoption metrics.
 - name: is_default_browser
   type: BOOLEAN
   mode: NULLABLE
-  description: A flag indicating whether the browser is set as the default browser
-    on the client side.
+  description: Boolean flag indicating whether Firefox is configured as the system default browser on the client. Critical metric for market share analysis and measuring Firefox's competitive position.
 - name: distribution_id
   type: STRING
   mode: NULLABLE
-  description: The distribution id associated with the install of Firefox.
+  description: The unique identifier for the Firefox distribution variant at install time. This captures OEM partnerships, special distributions, and custom builds, enabling analysis of distribution partner performance and specialized Firefox deployments.
 - name: activity_segment
   type: STRING
   mode: NULLABLE
-  description: Classification of users based on their browsing activity. E.g., infrequent,
-    casual, regular.
+  description: User classification based on browsing activity patterns (e.g., "infrequent", "casual", "regular", "core"). This segmentation enables targeted analysis of user engagement levels and helps identify at-risk user populations.
 - name: attribution_medium
   type: STRING
   mode: NULLABLE
-  description: 'Medium to which the ping should be attributed e.g. referral, firefox
-    desktop.
-
-    '
+  description: The marketing medium attributed to the Firefox installation (e.g., "referral", "organic", "paid"). Derived from attribution data collected at install time, this enables marketing channel effectiveness analysis.
 - name: attribution_source
   type: STRING
   mode: NULLABLE
-  description: 'Source to which the ping should be attributed e.g. firefox browser,
-    search fox.
-
-    '
+  description: The specific source attributed to the Firefox installation (e.g., "google", "mozilla.org", "firefox-browser"). Provides granular attribution for install source tracking and campaign performance measurement.
 - name: daily_users
   type: INTEGER
   mode: NULLABLE
-  description: 'Number of daily users on the submission_date (based on sending the
-    ping).
-
-    '
+  description: Count of distinct users who sent at least one baseline ping on the submission_date. Computed as COUNTIF(is_daily_user) from the source table. This represents ping submission behavior rather than active usage.
 - name: weekly_users
   type: INTEGER
   mode: NULLABLE
-  description: 'Number of weekly users on the submission_date (based on sending the
-    ping).
-
-    '
+  description: Count of distinct users who sent at least one baseline ping within the 7-day window ending on submission_date. Computed as COUNTIF(is_weekly_user). Useful for measuring weekly engagement and session frequency.
 - name: monthly_users
   type: INTEGER
   mode: NULLABLE
-  description: 'Number of monthly users on the submission_date (based on sending the
-    ping).
-
-    '
+  description: Count of distinct users who sent at least one baseline ping within the 28-day window ending on submission_date. Computed as COUNTIF(is_monthly_user). Provides monthly user base size for trend analysis.
 - name: dau
   type: INTEGER
   mode: NULLABLE
-  description: 'Number of DAU (Daily Active Users) users on the submission_date (based
-    on activity).
-
-    '
+  description: Daily Active Users count - users who had browsing activity on the submission_date. Computed as COUNTIF(is_dau). This is the gold standard metric for measuring daily active engagement and differs from daily_users by requiring actual usage beyond ping submission.
 - name: wau
   type: INTEGER
   mode: NULLABLE
-  description: 'Number of WAU (Weekly Active Users) users on the submission_date (based
-    on activity).
-
-    '
+  description: Weekly Active Users count - users who had browsing activity within the 7-day window ending on submission_date. Computed as COUNTIF(is_wau). Critical for tracking weekly engagement trends and calculating engagement ratios.
 - name: mau
   type: INTEGER
   mode: NULLABLE
-  description: 'Number of MAU (Monthly Active Users) users on the submission_date
-    (based on activity).
-
-    '
+  description: Monthly Active Users count - users who had browsing activity within the 28-day window ending on submission_date. Computed as COUNTIF(is_mau). The primary metric for measuring Firefox's monthly active user base and long-term growth trends.
