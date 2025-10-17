@@ -28,7 +28,7 @@ fields:
   name: distribution_id
   type: STRING
   description: |
-    The distribution id associated with the install of Firefox.
+    Identifier for the Firefox distribution source or partner, associated with the install and indicating where the installation originated from
 
 - mode: NULLABLE
   name: is_dau
