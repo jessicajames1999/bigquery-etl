@@ -9,12 +9,12 @@ fields:
 - name: client_id
   type: STRING
   mode: NULLABLE
-  description: A unique identifier (UUID) for the client.
+  description: A unique identifier (UUID) for the client installation
 - name: sample_id
   type: INTEGER
   mode: NULLABLE
-  description: A number, 0-99, that samples by client_id and allows filtering data
-    for analysis. It is a pipeline-generated artifact that should match between pings.
+  description: Sample identifier (0-99) used to partition clients for analysis, generated
+    by the data pipeline based on client_id and consistent across pings
 - name: first_run_date
   type: DATE
   mode: NULLABLE
@@ -41,21 +41,24 @@ fields:
 - name: android_sdk_version
   type: STRING
   mode: NULLABLE
-  description: The optional Android specific SDK version of the software running on this hardware device.
+  description: The optional Android specific SDK version of the software running on
+    this hardware device.
 - name: locale
   type: STRING
   mode: NULLABLE
-  description: Set of language- and/or country-based preferences for a user interface.
+  description: User's language and region preference in BCP 47 format combining language
+    code and optional country code (e.g., 'en-US', 'de', 'ru'), representing country-based
+    and language-based preferences for the user interface
 - name: city
   type: STRING
   mode: NULLABLE
-  description: Name of the city in which the activity took place, as determined
-    by the IP geolocation.
+  description: Name of the city in which the activity took place, as determined by
+    the IP geolocation.
 - name: country
   type: STRING
   mode: NULLABLE
-  description: Code of the country in which the activity took place, as determined
-    by the IP geolocation.
+  description: Two-letter ISO 3166-1 alpha-2 country code where the user activity
+    occurred, determined by IP geolocation (unknown values may be stored as '??')
 - name: app_build
   type: STRING
   mode: NULLABLE
@@ -78,7 +81,8 @@ fields:
 - name: telemetry_sdk_build
   type: STRING
   mode: NULLABLE
-  description: The version of the Glean SDK at the time the ping was collected (e.g. 25.0.0).
+  description: The version of the Glean SDK at the time the ping was collected (e.g.
+    25.0.0).
 - name: first_seen_date
   type: DATE
   mode: NULLABLE
@@ -91,7 +95,8 @@ fields:
 - name: distribution_id
   type: STRING
   mode: NULLABLE
-  description: The distribution id associated with the install of Firefox.
+  description: Identifier for the Firefox distribution source or partner, associated
+    with the install and indicating where the installation originated from
 - name: geo_subdivision
   type: STRING
   mode: NULLABLE

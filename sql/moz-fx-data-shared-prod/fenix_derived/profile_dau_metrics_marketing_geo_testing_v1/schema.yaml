@@ -1,119 +1,106 @@
 fields:
-
 - mode: NULLABLE
   name: submission_date
   type: DATE
   description: Date of data processed.
-
 - mode: NULLABLE
   name: normalized_channel
   type: STRING
   description: Release channel of the app the profile is using.
-
 - name: app_name
   type: STRING
   mode: NULLABLE
   description: App name the profile is using on the submission_date.
-
 - name: app_version
   type: STRING
   mode: NULLABLE
-  description: Client's app version on the submission_date.
-
+  description: User-visible application version string in semantic versioning format
+    (e.g., '1.0.3', '99.3.3') for the browser or mobile app
 - name: country
   type: STRING
   mode: NULLABLE
-  description: Client's country on the submission_date.
-
+  description: Two-letter ISO 3166-1 alpha-2 country code where the user activity
+    occurred, determined by IP geolocation (unknown values may be stored as '??')
 - name: city
   type: STRING
   mode: NULLABLE
   description: Client's city on the submission_date.
-
 - name: geo_subdivision
   type: STRING
   mode: NULLABLE
   description: Client's geo subdivision on the submission_date.
-
 - name: locale
   type: STRING
   mode: NULLABLE
-  description: Client's locale on the submission_date.
-
+  description: User's language and region preference in BCP 47 format combining language
+    code and optional country code (e.g., 'en-US', 'de', 'ru'), representing country-based
+    and language-based preferences for the user interface
 - name: device_type
   type: STRING
   mode: NULLABLE
-  description: |
-    On Apple devices allows us to differentiate between iPhone and iPad. On Android devices the value is always "Android".
+  description: 'On Apple devices allows us to differentiate between iPhone and iPad.
+    On Android devices the value is always "Android".
 
+    '
 - name: is_mobile
   type: BOOLEAN
   mode: NULLABLE
-  description: |
-    Indicates if this specific entry is used towards calculating mobile DAU.
+  description: 'Indicates if this specific entry is used towards calculating mobile
+    DAU.
 
+    '
 - name: install_source
   type: STRING
   mode: NULLABLE
   description: The source of a profile installation.
-
 - name: distribution_id
   type: STRING
   mode: NULLABLE
-  description: A string containing the distribution identifier.
-
+  description: Identifier for the Firefox distribution source or partner, associated
+    with the install and indicating where the installation originated from
 - name: play_store_attribution_campaign
   type: STRING
   mode: NULLABLE
   description: Play store campaign the profile is attributed to.
-
 - name: play_store_attribution_medium
   type: STRING
   mode: NULLABLE
   description: Play store Medium the profile is attributed to.
-
 - name: play_store_attribution_source
   type: STRING
   mode: NULLABLE
   description: Play store source the profile is attributed to.
-
 - name: play_store_attribution_content
   type: STRING
   mode: NULLABLE
-  description:
-
+  description: null
 - name: play_store_attribution_term
   type: STRING
   mode: NULLABLE
-  description:
-
+  description: null
 - name: meta_attribution_app
   type: STRING
   mode: NULLABLE
   description: Facebook app linked to paid marketing.
-
 - name: adjust_ad_group
   type: STRING
   mode: NULLABLE
   description: Adjust Ad Group the profile is attributed to.
-
 - name: adjust_campaign
   type: STRING
   mode: NULLABLE
   description: Adjust Campaign the profile is attributed to.
-
 - name: adjust_creative
   type: STRING
   mode: NULLABLE
   description: Adjust Creative the profile is attributed to.
-
 - name: adjust_network
   type: STRING
   mode: NULLABLE
   description: Adjust Network the profile is attributed to.
-
 - name: dau
   type: INTEGER
   mode: NULLABLE
-  description: |
-    Number of dau profiles on the submission_date.
+  description: 'Number of dau profiles on the submission_date.
+
+    '

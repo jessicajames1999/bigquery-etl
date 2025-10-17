@@ -5,9 +5,12 @@ fields:
 - name: client_id
   type: STRING
   mode: NULLABLE
+  description: A unique identifier (UUID) for the client installation
 - name: sample_id
   type: INTEGER
   mode: NULLABLE
+  description: Sample identifier (0-99) used to partition clients for analysis, generated
+    by the data pipeline based on client_id and consistent across pings
 - name: first_reported_country
   type: STRING
   mode: NULLABLE

@@ -26,12 +26,16 @@ fields:
 - name: country
   type: STRING
   mode: NULLABLE
+  description: Two-letter ISO 3166-1 alpha-2 country code where the user activity
+    occurred, determined by IP geolocation (unknown values may be stored as '??')
 - name: language
   type: STRING
   mode: NULLABLE
 - name: app_version
   type: STRING
   mode: NULLABLE
+  description: User-visible application version string in semantic versioning format
+    (e.g., '1.0.3', '99.3.3') for the browser or mobile app
 - name: os_name
   type: STRING
   mode: NULLABLE

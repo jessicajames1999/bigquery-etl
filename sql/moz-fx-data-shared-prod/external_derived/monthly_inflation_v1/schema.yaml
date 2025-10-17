@@ -2,7 +2,8 @@ fields:
 - name: report_period
   type: STRING
   mode: NULLABLE
-  description: Report Period - A string in YYYY-MM format representing the month related to the CPI data
+  description: Report Period - A string in YYYY-MM format representing the month related
+    to the CPI data
 - name: consumer_price_index
   type: FLOAT
   mode: NULLABLE
@@ -10,7 +11,8 @@ fields:
 - name: country
   type: STRING
   mode: NULLABLE
-  description: Country
+  description: Two-letter ISO 3166-1 alpha-2 country code where the user activity
+    occurred, determined by IP geolocation (unknown values may be stored as '??')
 - name: base_year
   type: STRING
   mode: NULLABLE

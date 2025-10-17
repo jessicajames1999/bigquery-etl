@@ -6,8 +6,8 @@ fields:
 - mode: NULLABLE
   name: country
   type: STRING
-  description: Code of the country in which the activity took place, as determined by
-    the IP geolocation. Unknown or NULL values are normally stored as '??'.
+  description: Two-letter ISO 3166-1 alpha-2 country code where the user activity
+    occurred, determined by IP geolocation (unknown values may be stored as '??')
 - mode: NULLABLE
   name: os
   type: STRING
@@ -19,10 +19,14 @@ fields:
 - mode: NULLABLE
   name: locale
   type: STRING
-  description: Set of language- and/or country-based preferences for a user interface.
+  description: User's language and region preference in BCP 47 format combining language
+    code and optional country code (e.g., 'en-US', 'de', 'ru'), representing country-based
+    and language-based preferences for the user interface
 - mode: NULLABLE
   name: app_version
   type: INTEGER
+  description: User-visible application version string in semantic versioning format
+    (e.g., '1.0.3', '99.3.3') for the browser or mobile app
 - mode: NULLABLE
   name: default_search_engine
   type: STRING

@@ -1,9 +1,10 @@
 fields:
-- description: Unique ID for the client installation.
+- description: A unique identifier (UUID) for the client installation
   mode: NULLABLE
   name: client_id
   type: STRING
-- description: Sample ID to limit query results during an analysis.
+- description: Sample identifier (0-99) used to partition clients for analysis, generated
+    by the data pipeline based on client_id and consistent across pings
   mode: NULLABLE
   name: sample_id
   type: INTEGER
@@ -43,11 +44,14 @@ fields:
   mode: NULLABLE
   name: os_version
   type: STRING
-- description: App display version for this client installation.
+- description: User-visible application version string in semantic versioning format
+    (e.g., '1.0.3', '99.3.3') for the browser or mobile app
   mode: NULLABLE
   name: app_version
   type: STRING
-- description: Client locale.
+- description: User's language and region preference in BCP 47 format combining language
+    code and optional country code (e.g., 'en-US', 'de', 'ru'), representing country-based
+    and language-based preferences for the user interface
   mode: NULLABLE
   name: locale
   type: STRING
@@ -76,26 +80,32 @@ fields:
   mode: NULLABLE
   name: install_source
   type: STRING
-- description: The id of the browser distribution made available in installation sources.
+- description: Identifier for the Firefox distribution source or partner, associated
+    with the install and indicating where the installation originated from
   name: distribution_id
   type: STRING
-- description: The utm_campaign this install is attributed to. Reported by the install referrer service, not Adjust.
+- description: The utm_campaign this install is attributed to. Reported by the install
+    referrer service, not Adjust.
   mode: NULLABLE
   name: play_store_attribution_campaign
   type: STRING
-- description: The utm_content this install is attributed to. Reported by the install referrer service, not Adjust.
+- description: The utm_content this install is attributed to. Reported by the install
+    referrer service, not Adjust.
   mode: NULLABLE
   name: play_store_attribution_content
   type: STRING
-- description: The utm_medium this install is attributed to. Reported by the install referrer service, not Adjust.
+- description: The utm_medium this install is attributed to. Reported by the install
+    referrer service, not Adjust.
   mode: NULLABLE
   name: play_store_attribution_medium
   type: STRING
-- description: The utm_source this install is attributed to. Reported by the install referrer service, not Adjust.
+- description: The utm_source this install is attributed to. Reported by the install
+    referrer service, not Adjust.
   mode: NULLABLE
   name: play_store_attribution_source
   type: STRING
-- description: The utm_term this install is attributed to. Reported by the install referrer service, not Adjust.
+- description: The utm_term this install is attributed to. Reported by the install
+    referrer service, not Adjust.
   mode: NULLABLE
   name: play_store_attribution_term
   type: STRING
@@ -103,7 +113,7 @@ fields:
   mode: NULLABLE
   name: play_store_attribution_install_referrer_response
   type: STRING
-- description:
+- description: null
   mode: NULLABLE
   name: meta_attribution_app
   type: STRING
@@ -189,31 +199,38 @@ fields:
     mode: NULLABLE
     name: install_source__source_ping_datetime
     type: DATETIME
-  - description: Datetime of the ping that reported the first play_store_attribution_campaign__ping_datetime value.
+  - description: Datetime of the ping that reported the first play_store_attribution_campaign__ping_datetime
+      value.
     mode: NULLABLE
     name: play_store_attribution_campaign__ping_datetime
     type: DATETIME
-  - description: Datetime of the ping that reported the first play_store_attribution_content__ping_datetime value.
+  - description: Datetime of the ping that reported the first play_store_attribution_content__ping_datetime
+      value.
     mode: NULLABLE
     name: play_store_attribution_content__ping_datetime
     type: DATETIME
-  - description: Datetime of the ping that reported the first play_store_attribution_medium__ping_datetime value.
+  - description: Datetime of the ping that reported the first play_store_attribution_medium__ping_datetime
+      value.
     mode: NULLABLE
     name: play_store_attribution_medium__ping_datetime
     type: DATETIME
-  - description: Datetime of the ping that reported the first play_store_attribution_source__ping_datetime value.
+  - description: Datetime of the ping that reported the first play_store_attribution_source__ping_datetime
+      value.
     mode: NULLABLE
     name: play_store_attribution_source__ping_datetime
     type: DATETIME
-  - description: Datetime of the ping that reported the first play_store_attribution_term__ping_datetime value.
+  - description: Datetime of the ping that reported the first play_store_attribution_term__ping_datetime
+      value.
     mode: NULLABLE
     name: play_store_attribution_term__ping_datetime
     type: DATETIME
-  - description: Datetime of the ping that reported the first play_store_attribution_install_referrer_response__ping_datetime value.
+  - description: Datetime of the ping that reported the first play_store_attribution_install_referrer_response__ping_datetime
+      value.
     mode: NULLABLE
     name: play_store_attribution_install_referrer_response__ping_datetime
     type: DATETIME
-  - description: Datetime of the ping that reported the first meta_attribution_app value.
+  - description: Datetime of the ping that reported the first meta_attribution_app
+      value.
     mode: NULLABLE
     name: meta_attribution_app__ping_datetime
     type: DATETIME

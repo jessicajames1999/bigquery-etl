@@ -2,22 +2,21 @@ fields:
 - name: state
   type: STRING
   mode: NULLABLE
-  description: "The markov state, as determined by the state function."
+  description: The markov state, as determined by the state function.
 - name: predicted_ad_clicks
   type: FLOAT64
   mode: NULLABLE
-  description: "Number of predicted ad clicks for the specified time horizon."
+  description: Number of predicted ad clicks for the specified time horizon.
 - name: time_horizon
   type: INTEGER
   mode: NULLABLE
-  description: "Number of days into the future that ad clicks are being predicted for."
+  description: Number of days into the future that ad clicks are being predicted for.
 - name: country
   type: STRING
   mode: NULLABLE
-  description: >
-    The country that this prediction is specified for.
-    Countries not explicitly present are bucketed into "ROW".
+  description: Two-letter ISO 3166-1 alpha-2 country code where the user activity
+    occurred, determined by IP geolocation (unknown values may be stored as '??')
 - name: state_function
   type: STRING
   mode: NULLABLE
-  description: "The state function used to determine the LTV for this state."
+  description: The state function used to determine the LTV for this state.

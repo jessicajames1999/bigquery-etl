@@ -24,6 +24,9 @@ fields:
 - name: locale
   type: STRING
   mode: NULLABLE
+  description: User's language and region preference in BCP 47 format combining language
+    code and optional country code (e.g., 'en-US', 'de', 'ru'), representing country-based
+    and language-based preferences for the user interface
 - name: lockedAt
   type: TIMESTAMP
   mode: NULLABLE
