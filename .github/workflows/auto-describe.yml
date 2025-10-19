@@ -22,7 +22,7 @@ jobs:
       
       - name: Install dependencies
         run: |
-          pip install ruamel.yaml
+          pip install ruamel.yaml requests
       
       - name: Update schema from issue
         id: update_schema
