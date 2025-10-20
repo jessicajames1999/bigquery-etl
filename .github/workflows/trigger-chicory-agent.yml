@@ -84,10 +84,10 @@ jobs:
               ]
             }")
           
-          # Extract run ID for logging
-          RUN_ID=$(echo $RESPONSE | jq -r '.id')
+          # Extract run ID (note: API returns 'run_id' not 'id')
+          RUN_ID=$(echo $RESPONSE | jq -r '.run_id')
           
-          if [ "$RUN_ID" != "null" ]; then
+          if [ "$RUN_ID" != "null" ] && [ -n "$RUN_ID" ]; then
             echo "✓ Agent triggered successfully with run ID: ${RUN_ID}"
           else
             echo "✗ Failed to trigger agent"
