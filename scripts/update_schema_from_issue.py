@@ -17,9 +17,23 @@ import requests
 from ruamel.yaml import YAML
 
 
+# def fetch_issue_body(repo, issue_number, token):
+#     """Fetch issue body from GitHub API."""
+#     url = f"https://api.github.com/repos/{repo}/issues/{issue_number}"
+#     headers = {
+#         "Authorization": f"Bearer {token}",
+#         "Accept": "application/vnd.github.v3+json"
+#     }
+    
+#     response = requests.get(url, headers=headers)
+#     response.raise_for_status()
+    
+#     return response.json()["body"]
+
 def fetch_issue_body(repo, issue_number, token):
-    """Fetch issue body from GitHub API."""
-    url = f"https://api.github.com/repos/{repo}/issues/{issue_number}"
+    """Fetch the most recent comment containing JSON."""
+    # Get all comments on the issue
+    url = f"https://api.github.com/repos/{repo}/issues/{issue_number}/comments"
     headers = {
         "Authorization": f"Bearer {token}",
         "Accept": "application/vnd.github.v3+json"
@@ -28,7 +42,27 @@ def fetch_issue_body(repo, issue_number, token):
     response = requests.get(url, headers=headers)
     response.raise_for_status()
     
-    return response.json()["body"]
+    comments = response.json()
+    
+    if not comments:
+        print("Error: No comments found on this issue")
+        sys.exit(1)
+    
+    # Find the most recent comment that starts with JSON
+    # Start from most recent and go backwards
+    for comment in reversed(comments):
+        author = comment["user"]["login"]
+        body = comment["body"].strip()
+        
+        # Check if this comment contains JSON (starts with '{')
+        if body.startswith('{'):
+            print(f"✓ Found JSON comment from: {author}")
+            return body
+    
+    # If no JSON comment found, show error
+    print("Error: No comment with JSON data found")
+    print(f"Found {len(comments)} comments total, but none contain JSON")
+    sys.exit(1)
 
 
 def parse_issue_body(body):
