@@ -100,15 +100,46 @@ def load_schema(schema_path):
     return data, yaml
 
 
+# def update_descriptions(schema_data, descriptions):
+#     """Update descriptions in schema data."""
+#     updated_count = 0
+    
+#     for field in schema_data['fields']:
+#         column_name = field['name']
+#         if column_name in descriptions:
+#             field['description'] = descriptions[column_name]
+#             updated_count += 1
+    
+#     return updated_count
+
 def update_descriptions(schema_data, descriptions):
-    """Update descriptions in schema data."""
+    """Update descriptions in schema data, including nested RECORD fields."""
     updated_count = 0
     
-    for field in schema_data['fields']:
-        column_name = field['name']
-        if column_name in descriptions:
-            field['description'] = descriptions[column_name]
+    def update_field(field, parent_path=""):
+        nonlocal updated_count
+        
+        # Current field path
+        field_name = field['name']
+        if parent_path:
+            field_path = f"{parent_path}.{field_name}"
+        else:
+            field_path = field_name
+        
+        # Update this field's description if provided
+        if field_path in descriptions:
+            field['description'] = descriptions[field_path]
             updated_count += 1
+        
+        # If this field has nested fields (implicit RECORD type)
+        # Check for 'fields' key regardless of explicit type declaration
+        if 'fields' in field:
+            for nested_field in field['fields']:
+                update_field(nested_field, field_path)
+    
+    # Process all top-level fields
+    for field in schema_data['fields']:
+        update_field(field)
     
     return updated_count
 
