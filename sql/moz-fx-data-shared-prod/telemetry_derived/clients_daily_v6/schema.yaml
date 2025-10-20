@@ -1,144 +1,167 @@
 fields:
-- description: The date when the telemetry ping is received on the server side.
+- description: The date when the telemetry ping was received on the server side,
+    partitioned for efficient querying of daily aggregated client metrics
   mode: NULLABLE
   name: submission_date
   type: DATE
-- description: A unique identifier (UUID) for the client.
+- description: A unique identifier (UUID) for the Firefox client installation, 
+    used to track individual browser instances across sessions and aggregate 
+    daily activity
   mode: NULLABLE
   name: client_id
   type: STRING
-- description: null
+- description: Daily sum of content process abnormal terminations (aborts) from 
+    subprocess_abnormal_abort keyed histogram, indicating browser stability 
+    issues in web content processes
   mode: NULLABLE
   name: aborts_content_sum
   type: INTEGER
-- description: null
+- description: Daily sum of GeckoMediaPlugin (GMP) process abnormal aborts from 
+    subprocess_abnormal_abort keyed histogram, tracking media plugin stability
   mode: NULLABLE
   name: aborts_gmplugin_sum
   type: INTEGER
-- description: null
+- description: Daily sum of plugin process abnormal terminations from 
+    subprocess_abnormal_abort keyed histogram, measuring NPAPI plugin stability
   mode: NULLABLE
   name: aborts_plugin_sum
   type: INTEGER
-- description: null
+- description: Mean number of active browser extensions and add-ons across all 
+    pings for the day, calculated from environment.addons.active_addons array 
+    length
   mode: NULLABLE
   name: active_addons_count_mean
   type: FLOAT
-- description: null
+- description: Array of active browser extensions with detailed metadata 
+    including addon_id, name, version, installation status, signature state, and
+    compatibility flags from environment.addons.active_addons
   fields:
-  - description: null
+  - description:
     mode: NULLABLE
     name: addon_id
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: blocklisted
     type: BOOLEAN
-  - description: null
+  - description:
     mode: NULLABLE
     name: name
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: user_disabled
     type: BOOLEAN
-  - description: null
+  - description:
     mode: NULLABLE
     name: app_disabled
     type: BOOLEAN
-  - description: null
+  - description:
     mode: NULLABLE
     name: version
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: scope
     type: INTEGER
-  - description: null
+  - description:
     mode: NULLABLE
     name: type
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: foreign_install
     type: BOOLEAN
-  - description: null
+  - description:
     mode: NULLABLE
     name: has_binary_components
     type: BOOLEAN
-  - description: null
+  - description:
     mode: NULLABLE
     name: install_day
     type: INTEGER
-  - description: null
+  - description:
     mode: NULLABLE
     name: update_day
     type: INTEGER
-  - description: null
+  - description:
     mode: NULLABLE
     name: signed_state
     type: INTEGER
-  - description: null
+  - description:
     mode: NULLABLE
     name: is_system
     type: BOOLEAN
-  - description: null
+  - description:
     mode: NULLABLE
     name: is_web_extension
     type: BOOLEAN
-  - description: null
+  - description:
     mode: NULLABLE
     name: multiprocess_compatible
     type: BOOLEAN
   mode: REPEATED
   name: active_addons
   type: RECORD
-- description: null
+- description: The branch identifier for the active Nimbus or Shield experiment 
+    the client is enrolled in, used for A/B testing analysis
   mode: NULLABLE
   name: active_experiment_branch
   type: STRING
-- description: null
+- description: The unique identifier for the active Nimbus or Shield experiment 
+    the client is enrolled in, enabling experiment cohort analysis
   mode: NULLABLE
   name: active_experiment_id
   type: STRING
-- description: null
+- description: Total active browser usage hours calculated from active_ticks 
+    (browser_engagement_active_ticks or simple_measurements.active_ticks) 
+    converted to hours, representing actual user engagement time
   mode: NULLABLE
   name: active_hours_sum
   type: FLOAT
-- description: null
+- description: Boolean flag from environment.settings indicating whether Firefox
+    validates add-on compatibility before installation
   mode: NULLABLE
   name: addon_compatibility_check_enabled
   type: BOOLEAN
-- description: null
+- description: The Firefox build identifier in YYYYMMDDHHMMSS format from 
+    application.build_id, uniquely identifying the browser build
   mode: NULLABLE
   name: app_build_id
   type: STRING
-- description: User visible version string (e.g. "1.0.3") for the browser.
+- description: User-visible Firefox version string (e.g., '95.0.2') from 
+    application.display_version, shown in the About Firefox dialog
   mode: NULLABLE
   name: app_display_version
   type: STRING
-- description: null
+- description: Application name from application.name, typically 'Firefox' for 
+    desktop browser installations
   mode: NULLABLE
   name: app_name
   type: STRING
-- description: User visible version string (e.g. "1.0.3") for the browser.
+- description: Semantic version string (e.g., '95.0.2') from 
+    application.version, representing the Firefox release version
   mode: NULLABLE
   name: app_version
   type: STRING
-- description: null
+- description: Marketing attribution data struct containing UTM parameters 
+    (source, medium, campaign, content), experiment/variation identifiers, 
+    download token (dltoken), download source (dlsource), and user agent (ua) 
+    from environment.settings.attribution
   fields:
-  - description: null
+  - description:
     mode: NULLABLE
     name: source
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: medium
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: campaign
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: content
     type: STRING
@@ -160,942 +183,1160 @@ fields:
   mode: NULLABLE
   name: attribution
   type: RECORD
-- description: null
+- description: Boolean flag from environment.settings indicating whether 
+    Firefox's add-on and plugin blocklist protection is active
   mode: NULLABLE
   name: blocklist_enabled
   type: BOOLEAN
-- description: The normalized channel the application is being distributed on.
+- description: The distribution channel from metadata.uri.app_update_channel, 
+    such as 'release', 'beta', 'nightly', or 'esr'
   mode: NULLABLE
   name: channel
   type: STRING
-- description: null
+- description: Mean time difference in seconds between client system clock and 
+    server time, calculated from submission_timestamp minus 
+    metadata.header.date, indicating clock synchronization issues
   mode: NULLABLE
   name: client_clock_skew_mean
   type: FLOAT
-- description: null
+- description: Mean time delay in seconds between ping creation and server 
+    receipt, calculated from submission_timestamp minus creation_date, measuring
+    network and processing latency
   mode: NULLABLE
   name: client_submission_latency_mean
   type: FLOAT
-- description: null
+- description: Number of physical CPU cores from environment.system.cpu.cores, 
+    distinct from logical processor count
   mode: NULLABLE
   name: cpu_cores
   type: INTEGER
-- description: null
+- description: Number of logical CPU processors from 
+    environment.system.cpu.count, including hyper-threaded cores
   mode: NULLABLE
   name: cpu_count
   type: INTEGER
-- description: null
+- description: CPU family identifier from environment.system.cpu.family, part of
+    the x86 CPUID specification
   mode: NULLABLE
   name: cpu_family
   type: INTEGER
-- description: null
+- description: CPU Level 2 cache size in kilobytes from 
+    environment.system.cpu.l2cache_kb, affecting processor performance
   mode: NULLABLE
   name: cpu_l2_cache_kb
   type: INTEGER
-- description: null
+- description: CPU Level 3 cache size in kilobytes from 
+    environment.system.cpu.l3cache_kb, shared across cores for improved 
+    performance
   mode: NULLABLE
   name: cpu_l3_cache_kb
   type: INTEGER
-- description: CPU model of the user's device.
+- description: CPU model number from environment.system.cpu.model, part of the 
+    x86 CPUID specification for processor identification
   mode: NULLABLE
   name: cpu_model
   type: INTEGER
-- description: CPU speed in MHz.
+- description: CPU clock speed in megahertz from 
+    environment.system.cpu.speed_m_hz, indicating processor frequency
   mode: NULLABLE
   name: cpu_speed_mhz
   type: INTEGER
-- description: CPU stepping.
+- description: CPU stepping revision from environment.system.cpu.stepping, 
+    identifying minor processor revisions within a model
   mode: NULLABLE
   name: cpu_stepping
   type: INTEGER
-- description: The CPU vendor (e.g. "GenuineIntel").
+- description: CPU manufacturer identifier from environment.system.cpu.vendor, 
+    such as 'GenuineIntel' or 'AuthenticAMD'
   mode: NULLABLE
   name: cpu_vendor
   type: STRING
-- description: null
+- description: Daily sum of detected content process crashes from 
+    subprocess_crashes_with_dump keyed histogram, measuring renderer process 
+    stability
   mode: NULLABLE
   name: crashes_detected_content_sum
   type: INTEGER
-- description: null
+- description: Daily sum of detected GeckoMediaPlugin crashes from 
+    subprocess_crashes_with_dump keyed histogram, tracking media plugin failures
   mode: NULLABLE
   name: crashes_detected_gmplugin_sum
   type: INTEGER
-- description: null
+- description: Daily sum of detected NPAPI plugin crashes from 
+    subprocess_crashes_with_dump keyed histogram, measuring plugin stability
   mode: NULLABLE
   name: crashes_detected_plugin_sum
   type: INTEGER
-- description: null
+- description: Daily sum of content process crash report submission attempts 
+    from process_crash_submit_attempt keyed histogram
   mode: NULLABLE
   name: crash_submit_attempt_content_sum
   type: INTEGER
-- description: null
+- description: Daily sum of main process crash report submission attempts from 
+    process_crash_submit_attempt keyed histogram
   mode: NULLABLE
   name: crash_submit_attempt_main_sum
   type: INTEGER
-- description: null
+- description: Daily sum of plugin process crash report submission attempts from
+    process_crash_submit_attempt keyed histogram
   mode: NULLABLE
   name: crash_submit_attempt_plugin_sum
   type: INTEGER
-- description: null
+- description: Daily sum of successfully submitted content process crash reports
+    from process_crash_submit_success keyed histogram
   mode: NULLABLE
   name: crash_submit_success_content_sum
   type: INTEGER
-- description: null
+- description: Daily sum of successfully submitted main process crash reports 
+    from process_crash_submit_success keyed histogram
   mode: NULLABLE
   name: crash_submit_success_main_sum
   type: INTEGER
-- description: null
+- description: Daily sum of successfully submitted plugin process crash reports 
+    from process_crash_submit_success keyed histogram
   mode: NULLABLE
   name: crash_submit_success_plugin_sum
   type: INTEGER
-- description: null
+- description: The name identifier of the default search engine from 
+    environment.settings.default_search_engine
   mode: NULLABLE
   name: default_search_engine
   type: STRING
-- description: null
+- description: File system path or identifier where the default search engine 
+    configuration was loaded from, from 
+    environment.settings.default_search_engine_data.load_path
   mode: NULLABLE
   name: default_search_engine_data_load_path
   type: STRING
-- description: null
+- description: Human-readable name of the default search engine from 
+    environment.settings.default_search_engine_data.name
   mode: NULLABLE
   name: default_search_engine_data_name
   type: STRING
-- description: null
+- description: Origin source of the default search engine configuration from 
+    environment.settings.default_search_engine_data.origin, indicating whether 
+    it's default, user-set, or partner-provided
   mode: NULLABLE
   name: default_search_engine_data_origin
   type: STRING
-- description: null
+- description: Search submission URL template for the default search engine from
+    environment.settings.default_search_engine_data.submission_url
   mode: NULLABLE
   name: default_search_engine_data_submission_url
   type: STRING
-- description: null
+- description: Daily sum of Firefox Developer Tools toolbox openings from 
+    devtools_toolbox_opened_count histogram, measuring developer feature usage
   mode: NULLABLE
   name: devtools_toolbox_opened_count_sum
   type: INTEGER
-- description: The distribution id associated with the install of Firefox.
+- description: Firefox distribution partner identifier from 
+    environment.partner.distribution_id, indicating customized builds or 
+    partnerships (e.g., 'canonical', 'yandex')
   mode: NULLABLE
   name: distribution_id
   type: STRING
-- description: null
+- description: Boolean flag from environment.settings.e10s_enabled indicating 
+    whether multi-process Firefox (Electrolysis) is active, separating content 
+    and browser processes for improved security and stability
   mode: NULLABLE
   name: e10s_enabled
   type: BOOLEAN
-- description: null
+- description: Build architecture from environment.build.architecture, such as 
+    'x86', 'x86-64', or 'aarch64'
   mode: NULLABLE
   name: env_build_arch
   type: STRING
-- description: null
+- description: Build identifier from environment.build.build_id, may differ from
+    app_build_id in certain update scenarios
   mode: NULLABLE
   name: env_build_id
   type: STRING
-- description: null
+- description: Build version string from environment.build.version, representing
+    the Firefox version at build time
   mode: NULLABLE
   name: env_build_version
   type: STRING
-- description: null
+- description: Array of accepted language codes for web content from 
+    environment.settings.intl.accept_languages, sent in HTTP Accept-Language 
+    headers
   mode: REPEATED
   name: environment_settings_intl_accept_languages
   type: STRING
-- description: null
+- description: Array of application UI locale codes from 
+    environment.settings.intl.app_locales, determining Firefox interface 
+    language
   mode: REPEATED
   name: environment_settings_intl_app_locales
   type: STRING
-- description: null
+- description: Array of locale codes available for installation from 
+    environment.settings.intl.available_locales
   mode: REPEATED
   name: environment_settings_intl_available_locales
   type: STRING
-- description: null
+- description: Array of user-requested locale codes from 
+    environment.settings.intl.requested_locales, representing language 
+    preferences
   mode: REPEATED
   name: environment_settings_intl_requested_locales
   type: STRING
-- description: null
+- description: Array of operating system locale codes from 
+    environment.settings.intl.system_locales, inherited from OS settings
   mode: REPEATED
   name: environment_settings_intl_system_locales
   type: STRING
-- description: null
+- description: Array of regional preference locale codes from 
+    environment.settings.intl.regional_prefs_locales, affecting date/time/number
+    formatting
   mode: REPEATED
   name: environment_settings_intl_regional_prefs_locales
   type: STRING
-- description: null
+- description: Array of active Nimbus/Shield experiments with key-value pairs 
+    representing experiment IDs and assigned branches from 
+    environment.experiments
   fields:
-  - description: null
+  - description:
     mode: NULLABLE
     name: key
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: value
     type: STRING
   mode: REPEATED
   name: experiments
   type: RECORD
-- description: null
+- description: Mean time in milliseconds from browser start to first paint 
+    event, calculated from timestamps_first_paint scalar or 
+    simple_measurements.first_paint, measuring startup performance
   mode: NULLABLE
   name: first_paint_mean
   type: FLOAT
-- description: null
+- description: Adobe Flash Player plugin version from 
+    environment.addons.active_plugins where name='Shockwave Flash', tracking 
+    legacy plugin usage
   mode: NULLABLE
   name: flash_version
   type: STRING
-- description: Code of the country in which the activity took place, as determined
-    by the IP geolocation.
+- description: Two-letter ISO 3166-1 alpha-2 country code from 
+    metadata.geo.country derived from IP geolocation, representing user location
+    ('??' for unknown)
   mode: NULLABLE
   name: country
   type: STRING
-- description: null
+- description: City name from metadata.geo.city derived from IP geolocation, 
+    providing geographic granularity for urban analysis
   mode: NULLABLE
   name: city
   type: STRING
-- description: null
+- description: First-level administrative subdivision from 
+    metadata.geo.subdivision1, typically representing state or province
   mode: NULLABLE
   name: geo_subdivision1
   type: STRING
-- description: null
+- description: Second-level administrative subdivision from 
+    metadata.geo.subdivision2, representing county or district
   mode: NULLABLE
   name: geo_subdivision2
   type: STRING
-- description: The name of the internet service provider associated with the client's
-    IP address.
+- description: Internet Service Provider name from metadata.isp.name, 
+    identifying the network provider
   mode: NULLABLE
   name: isp_name
   type: STRING
-- description: null
+- description: Organization name associated with the ISP from 
+    metadata.isp.organization, which may differ from the ISP brand name
   mode: NULLABLE
   name: isp_organization
   type: STRING
-- description: null
+- description: Status of Advanced Layers graphics feature from 
+    environment.system.gfx.features.advanced_layers.status, indicating 
+    GPU-accelerated compositing availability
   mode: NULLABLE
   name: gfx_features_advanced_layers_status
   type: STRING
-- description: null
+- description: Direct2D graphics API status from 
+    environment.system.gfx.features.d2d.status, used for hardware-accelerated 2D
+    rendering on Windows
   mode: NULLABLE
   name: gfx_features_d2d_status
   type: STRING
-- description: null
+- description: Direct3D 11 graphics API status from 
+    environment.system.gfx.features.d3d11.status, used for GPU acceleration on 
+    Windows
   mode: NULLABLE
   name: gfx_features_d3d11_status
   type: STRING
-- description: Information about the out-of-process compositing ("GPU Process") GFX
-    feature. unused - This feature has not been requested. unavailable - Safe Mode
-    or OS restriction prevents use. blocked - An internal condition (such as safe
-    mode) prevents use. blocklisted - Blocked due to a blocklist restriction. denied"
-    - Blocked due to allowlist restrictions. disabled - User explicitly disabled this
-    default feature. failed - Feature failed to initialize. available - User has this
-    feature available by default and it's in use.
+- description: "Out-of-process GPU compositing status from environment.system.gfx.features.gpu_process.status.
+    Values: 'unused', 'unavailable', 'blocked', 'blocklisted', 'denied', 'disabled',
+    'failed', 'available', indicating whether GPU process isolation is active"
   mode: NULLABLE
   name: gfx_features_gpu_process_status
   type: STRING
-- description: null
+- description: Daily sum of about:debugging page openings from 
+    devtools_aboutdebugging_opened_count histogram, measuring add-on debugging 
+    usage
   mode: NULLABLE
   name: histogram_parent_devtools_aboutdebugging_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Animation Inspector tool openings from 
+    devtools_animationinspector_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_animationinspector_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Browser Console openings from 
+    devtools_browserconsole_opened_count histogram, used for debugging Firefox 
+    itself
   mode: NULLABLE
   name: histogram_parent_devtools_browserconsole_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Canvas Debugger openings from 
+    devtools_canvasdebugger_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_canvasdebugger_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Computed View (CSS computed styles) openings from 
+    devtools_computedview_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_computedview_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of custom DevTools panel openings from 
+    devtools_custom_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_custom_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Developer Toolbar openings from 
+    devtools_developertoolbar_opened_count histogram (deprecated feature)
   mode: NULLABLE
   name: histogram_parent_devtools_developertoolbar_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of DOM Inspector openings from 
+    devtools_dom_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_dom_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Color Picker (Eyedropper) tool openings from 
+    devtools_eyedropper_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_eyedropper_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Font Inspector tool openings from 
+    devtools_fontinspector_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_fontinspector_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Page Inspector (Element Inspector) openings from 
+    devtools_inspector_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_inspector_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Browser Debugger (chrome debugging) openings from 
+    devtools_jsbrowserdebugger_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_jsbrowserdebugger_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of JavaScript Debugger openings from 
+    devtools_jsdebugger_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_jsdebugger_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of JavaScript Profiler openings from 
+    devtools_jsprofiler_opened_count histogram (deprecated)
   mode: NULLABLE
   name: histogram_parent_devtools_jsprofiler_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Layout View (Box Model) openings from 
+    devtools_layoutview_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_layoutview_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Memory tool openings from 
+    devtools_memory_opened_count histogram for heap analysis
   mode: NULLABLE
   name: histogram_parent_devtools_memory_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Eyedropper tool openings via menu from 
+    devtools_menu_eyedropper_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_menu_eyedropper_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Network Monitor openings from 
+    devtools_netmonitor_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_netmonitor_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of DevTools Settings panel openings from 
+    devtools_options_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_options_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Paint Flashing tool activations from 
+    devtools_paintflashing_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_paintflashing_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Eyedropper picker activations from 
+    devtools_picker_eyedropper_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_picker_eyedropper_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Responsive Design Mode activations from 
+    devtools_responsive_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_responsive_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of CSS Rules View openings from 
+    devtools_ruleview_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_ruleview_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Scratchpad JavaScript editor openings from 
+    devtools_scratchpad_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_scratchpad_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Scratchpad window openings from 
+    devtools_scratchpad_window_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_scratchpad_window_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Shader Editor openings from 
+    devtools_shadereditor_opened_count histogram for WebGL debugging
   mode: NULLABLE
   name: histogram_parent_devtools_shadereditor_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Storage Inspector openings from 
+    devtools_storage_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_storage_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Style Editor openings from 
+    devtools_styleeditor_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_styleeditor_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Web Audio Editor openings from 
+    devtools_webaudioeditor_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_webaudioeditor_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Web Console openings from 
+    devtools_webconsole_opened_count histogram
   mode: NULLABLE
   name: histogram_parent_devtools_webconsole_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of WebIDE openings from devtools_webide_opened_count 
+    histogram (deprecated)
   mode: NULLABLE
   name: histogram_parent_devtools_webide_opened_count_sum
   type: INTEGER
-- description: null
+- description: Year when the operating system was installed from 
+    environment.system.os.install_year, useful for OS age analysis
   mode: NULLABLE
   name: install_year
   type: INTEGER
-- description: A flag indicating whether the browser is set as the default browser
-    on the client side.
+- description: Boolean flag from environment.settings.is_default_browser 
+    indicating whether Firefox is set as the system default browser
   mode: NULLABLE
   name: is_default_browser
   type: BOOLEAN
-- description: null
+- description: Boolean flag from environment.system.is_wow64 indicating whether 
+    Firefox is running as 32-bit on 64-bit Windows (Windows-on-Windows 64-bit)
   mode: NULLABLE
   name: is_wow64
   type: BOOLEAN
-- description: Set of language- and/or country-based preferences for a user interface.
+- description: User's language and region preference in BCP 47 format from 
+    environment.settings.locale (e.g., 'en-US', 'de', 'fr-FR'), determining UI 
+    language and regional formatting
   mode: NULLABLE
   name: locale
   type: STRING
-- description: null
+- description: System physical memory (RAM) in megabytes from 
+    environment.system.memory_mb
   mode: NULLABLE
   name: memory_mb
   type: INTEGER
-- description: The normalized channel the application is being distributed on.
+- description: Standardized distribution channel from normalized_channel field, 
+    normalizing channel variations for consistent analysis
   mode: NULLABLE
   name: normalized_channel
   type: STRING
-- description: null
+- description: Standardized operating system version from normalized_os_version,
+    normalizing OS version strings for cross-platform analysis
   mode: NULLABLE
   name: normalized_os_version
   type: STRING
-- description: The normalized name of the operating system running at the client.
+- description: Operating system name from environment.system.os.name, normalized
+    values include 'Windows_NT', 'Darwin' (macOS), 'Linux'
   mode: NULLABLE
   name: os
   type: STRING
-- description: null
+- description: Windows Service Pack major version from 
+    environment.system.os.service_pack_major, relevant for older Windows 
+    versions
   mode: NULLABLE
   name: os_service_pack_major
   type: INTEGER
-- description: null
+- description: Windows Service Pack minor version from 
+    environment.system.os.service_pack_minor, relevant for older Windows 
+    versions
   mode: NULLABLE
   name: os_service_pack_minor
   type: INTEGER
-- description: null
+- description: Operating system version string from 
+    environment.system.os.version, such as '10.0' for Windows 10 or '10.15.7' 
+    for macOS Catalina
   mode: NULLABLE
   name: os_version
   type: STRING
-- description: null
+- description: Count of telemetry pings aggregated into this daily row, 
+    indicating data volume per client per day
   mode: NULLABLE
   name: pings_aggregated_by_this_row
   type: INTEGER
-- description: null
+- description: Mean number of bookmarks stored in Places database from 
+    places_bookmarks_count histogram, averaged across daily pings
   mode: NULLABLE
   name: places_bookmarks_count_mean
   type: FLOAT
-- description: null
+- description: Mean number of visited pages in Places history database from 
+    places_pages_count histogram, averaged across daily pings
   mode: NULLABLE
   name: places_pages_count_mean
   type: FLOAT
-- description: null
+- description: Daily sum of plugin hang events from subprocess_crashes_with_dump
+    pluginhang keyed histogram, measuring unresponsive plugin instances
   mode: NULLABLE
   name: plugin_hangs_sum
   type: INTEGER
-- description: null
+- description: Daily sum of plugin activation permission grants from 
+    plugins_infobar_allow histogram, tracking click-to-play interactions
   mode: NULLABLE
   name: plugins_infobar_allow_sum
   type: INTEGER
-- description: null
+- description: Daily sum of plugin activation denials from plugins_infobar_block
+    histogram, measuring security-conscious user behavior
   mode: NULLABLE
   name: plugins_infobar_block_sum
   type: INTEGER
-- description: null
+- description: Daily sum of plugin permission infobar displays from 
+    plugins_infobar_shown histogram, measuring click-to-play prompts
   mode: NULLABLE
   name: plugins_infobar_shown_sum
   type: INTEGER
-- description: null
+- description: Daily count of plugin notification displays from 
+    plugins_notification_shown histogram value at key=1
   mode: NULLABLE
   name: plugins_notification_shown_sum
   type: INTEGER
-- description: The Firefox build id the browser is updating from. Follows the same
-    format as application.buildId. Only valid for "update" pings with reason "success".
+- description: Firefox build ID from the previous version before an update from 
+    payload.info.previous_build_id, used to track update paths and measure 
+    update success rates
   mode: NULLABLE
   name: previous_build_id
   type: STRING
-- description: null
+- description: Number of days since profile creation, calculated from 
+    profile_creation_date to submission_date
   mode: NULLABLE
   name: profile_age_in_days
   type: INTEGER
-- description: null
+- description: Profile creation timestamp in epoch seconds from 
+    environment.profile.creation_date, indicating when the Firefox profile was 
+    first created
   mode: NULLABLE
   name: profile_creation_date
   type: STRING
-- description: null
+- description: Daily sum of Web Push API notification events from 
+    push_api_notify histogram, measuring push notification delivery
   mode: NULLABLE
   name: push_api_notify_sum
   type: INTEGER
-- description: A number, 0-99, that samples by client_id and allows filtering data
-    for analysis. It is a pipeline-generated artifact that should match between pings.
+- description: Client sample identifier (0-99) from sample_id field, derived 
+    from client_id hash for consistent sampling in analyses, enabling 
+    reproducible cohort selection
   mode: NULLABLE
   name: sample_id
   type: INTEGER
-- description: null
+- description: Content process sandboxing security level from 
+    environment.settings.sandbox.effective_content_process_level, with higher 
+    values indicating stricter isolation
   mode: NULLABLE
   name: sandbox_effective_content_process_level
   type: INTEGER
-- description: null
+- description: Daily sum of STUN retransmissions in WebRTC connections from 
+    combined parent/content scalars, indicating network connectivity issues
   mode: NULLABLE
   name: scalar_combined_webrtc_nicer_stun_retransmits_sum
   type: INTEGER
-- description: null
+- description: Daily sum of TURN server 401 unauthorized responses in WebRTC 
+    from combined scalars, indicating authentication failures
   mode: NULLABLE
   name: scalar_combined_webrtc_nicer_turn_401s_sum
   type: INTEGER
-- description: null
+- description: Daily sum of TURN server 403 forbidden responses in WebRTC from 
+    combined scalars
   mode: NULLABLE
   name: scalar_combined_webrtc_nicer_turn_403s_sum
   type: INTEGER
-- description: null
+- description: Daily sum of TURN server 438 stale nonce responses in WebRTC from
+    combined scalars
   mode: NULLABLE
   name: scalar_combined_webrtc_nicer_turn_438s_sum
   type: INTEGER
-- description: null
+- description: Daily sum of navigator.storage.estimate() API calls from content 
+    process scalars, measuring storage quota API usage
   mode: NULLABLE
   name: scalar_content_navigator_storage_estimate_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of navigator.storage.persist() API calls from content 
+    process scalars, measuring persistent storage requests
   mode: NULLABLE
   name: scalar_content_navigator_storage_persist_count_sum
   type: INTEGER
-- description: null
+- description: Websense security software registry version from parent process 
+    scalars, used to detect software that may interfere with Firefox updates
   mode: NULLABLE
   name: scalar_parent_aushelper_websense_reg_version
   type: STRING
-- description: null
+- description: Maximum number of concurrent tabs open in any session during the 
+    day from parent process scalars, measuring browser workload
   mode: NULLABLE
   name: scalar_parent_browser_engagement_max_concurrent_tab_count_max
   type: INTEGER
-- description: null
+- description: Maximum number of concurrent windows open in any session during 
+    the day from parent process scalars
   mode: NULLABLE
   name: scalar_parent_browser_engagement_max_concurrent_window_count_max
   type: INTEGER
-- description: null
+- description: Daily sum of tab open events from parent process scalars, 
+    measuring tab creation frequency
   mode: NULLABLE
   name: scalar_parent_browser_engagement_tab_open_event_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of total URI loads from parent process scalars, 
+    measuring overall browsing activity including redirects and sub-resources
   mode: NULLABLE
   name: scalar_parent_browser_engagement_total_uri_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of unfiltered URI loads from parent process scalars, 
+    including all navigations before filtering
   mode: NULLABLE
   name: scalar_parent_browser_engagement_unfiltered_uri_count_sum
   type: INTEGER
-- description: null
+- description: Maximum count of unique domains visited in any session during the
+    day from parent process scalars
   mode: NULLABLE
   name: scalar_parent_browser_engagement_unique_domains_count_max
   type: INTEGER
-- description: null
+- description: Mean count of unique domains visited per session from parent 
+    process scalars, averaged across daily sessions
   mode: NULLABLE
   name: scalar_parent_browser_engagement_unique_domains_count_mean
   type: FLOAT
-- description: null
+- description: Daily sum of window open events from parent process scalars, 
+    tracking new window creation
   mode: NULLABLE
   name: scalar_parent_browser_engagement_window_open_event_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of accessibility tree node inspections from parent 
+    process scalars, measuring accessibility DevTools usage
   mode: NULLABLE
   name: scalar_parent_devtools_accessibility_node_inspected_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of Accessibility Inspector openings from parent process
+    scalars
   mode: NULLABLE
   name: scalar_parent_devtools_accessibility_opened_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of accessibility picker tool activations from parent 
+    process scalars
   mode: NULLABLE
   name: scalar_parent_devtools_accessibility_picker_used_count_sum
   type: INTEGER
-- description: null
+- description: Keyed scalar array with daily sums of accessible node selections 
+    by interaction type from parent process
   fields:
-  - description: null
+  - description:
     mode: NULLABLE
     name: key
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: value
     type: INTEGER
   mode: REPEATED
   name: scalar_parent_devtools_accessibility_select_accessible_for_node_sum
   type: RECORD
-- description: null
+- description: Daily sum of accessibility service enable events from parent 
+    process scalars
   mode: NULLABLE
   name: scalar_parent_devtools_accessibility_service_enabled_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of 'Copy Full CSS Selector' context menu uses from 
+    parent process scalars
   mode: NULLABLE
   name: scalar_parent_devtools_copy_full_css_selector_opened_sum
   type: INTEGER
-- description: null
+- description: Daily sum of 'Copy Unique CSS Selector' context menu uses from 
+    parent process scalars
   mode: NULLABLE
   name: scalar_parent_devtools_copy_unique_css_selector_opened_sum
   type: INTEGER
-- description: null
+- description: Daily sum of eyedropper tool activations via toolbar from parent 
+    process scalars
   mode: NULLABLE
   name: scalar_parent_devtools_toolbar_eyedropper_opened_sum
   type: INTEGER
-- description: null
+- description: Daily sum of content processes experiencing memory pressure from 
+    parent process scalars
   mode: NULLABLE
   name: scalar_parent_dom_contentprocess_troubled_due_to_memory_sum
   type: INTEGER
-- description: null
+- description: Daily sum of navigator.storage.estimate() API calls from parent 
+    process scalars
   mode: NULLABLE
   name: scalar_parent_navigator_storage_estimate_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of navigator.storage.persist() API calls from parent 
+    process scalars
   mode: NULLABLE
   name: scalar_parent_navigator_storage_persist_count_sum
   type: INTEGER
-- description: null
+- description: Daily sum of extensions using the storage.sync API from parent 
+    process scalars
   mode: NULLABLE
   name: scalar_parent_storage_sync_api_usage_extensions_using_sum
   type: INTEGER
-- description: null
+- description: Search experiment cohort identifier from 
+    environment.settings.search_cohort, used for search feature experiments
   mode: NULLABLE
   name: search_cohort
   type: STRING
-- description: null
+- description: Daily sum of searches initiated from the about:home page, 
+    aggregated from search_counts array where source='abouthome'
   mode: NULLABLE
   name: search_count_abouthome
   type: INTEGER
-- description: null
+- description: Daily sum of searches initiated from context menu (right-click 
+    search), aggregated from search_counts array
   mode: NULLABLE
   name: search_count_contextmenu
   type: INTEGER
-- description: null
+- description: Daily sum of searches initiated from the new tab page, aggregated
+    from search_counts array where source='newtab'
   mode: NULLABLE
   name: search_count_newtab
   type: INTEGER
-- description: null
+- description: Daily sum of searches initiated from the search bar, aggregated 
+    from search_counts array where source='searchbar'
   mode: NULLABLE
   name: search_count_searchbar
   type: INTEGER
-- description: null
+- description: Daily sum of searches initiated from system integrations, 
+    aggregated from search_counts array where source='system'
   mode: NULLABLE
   name: search_count_system
   type: INTEGER
-- description: null
+- description: Daily sum of searches initiated from the URL bar (address bar), 
+    aggregated from search_counts array where source='urlbar'
   mode: NULLABLE
   name: search_count_urlbar
   type: INTEGER
-- description: null
+- description: Total daily search count across all search entry points and 
+    engines, sum of all search_counts entries
   mode: NULLABLE
   name: search_count_all
   type: INTEGER
-- description: null
+- description: Daily count of searches from Mozilla search access points with 
+    partner tags, measuring monetizable search volume
   mode: NULLABLE
   name: search_count_tagged_sap
   type: INTEGER
-- description: null
+- description: Daily count of follow-on searches (subsequent searches in same 
+    session) from tagged SAPs, measuring search engagement depth
   mode: NULLABLE
   name: search_count_tagged_follow_on
   type: INTEGER
-- description: null
+- description: Daily count of organic (non-partner-tagged) searches, 
+    representing user-initiated non-monetized searches
   mode: NULLABLE
   name: search_count_organic
   type: INTEGER
 - mode: NULLABLE
   name: search_count_urlbar_handoff
   type: INTEGER
+  description: Daily sum of searches handed off from about:newtab to the urlbar,
+    aggregated from search_counts
 - mode: NULLABLE
   name: search_count_urlbar_persisted
   type: INTEGER
-- description: null
+  description: Daily sum of searches from persisted urlbar state, aggregated 
+    from search_counts
+- description: Mean time in milliseconds to restore a previous session from 
+    session_restored simple measurement, measuring session restore performance
   mode: NULLABLE
   name: session_restored_mean
   type: FLOAT
-- description: null
+- description: Count of browser sessions initiated on this date, derived from 
+    subsession start events
   mode: NULLABLE
   name: sessions_started_on_this_day
   type: INTEGER
-- description: null
+- description: Daily sum of forceful browser shutdowns from subprocess_kill_hard
+    ShutDownKill keyed histogram, indicating abnormal terminations
   mode: NULLABLE
   name: shutdown_kill_sum
   type: INTEGER
-- description: null
+- description: Total subsession duration in hours from 
+    payload.info.subsession_length, aggregated across all pings for the day
   mode: NULLABLE
   name: subsession_hours_sum
   type: NUMERIC
-- description: null
+- description: Daily sum of failed SSL/TLS handshakes from ssl_handshake_result 
+    histogram (keys 1-671), indicating certificate or connection errors
   mode: NULLABLE
   name: ssl_handshake_result_failure_sum
   type: INTEGER
-- description: null
+- description: Daily sum of successful SSL/TLS handshakes from 
+    ssl_handshake_result histogram (key 0), measuring secure connection 
+    establishment
   mode: NULLABLE
   name: ssl_handshake_result_success_sum
   type: INTEGER
-- description: null
+- description: Boolean flag indicating whether Firefox Sync is configured from 
+    environment.services.sync_enabled or weave_configured histogram
   mode: NULLABLE
   name: sync_configured
   type: BOOLEAN
-- description: null
+- description: Mean number of desktop devices connected to Firefox Sync from 
+    weave_device_count_desktop histogram maximum key
   mode: NULLABLE
   name: sync_count_desktop_mean
   type: FLOAT
-- description: null
+- description: Mean number of mobile devices connected to Firefox Sync from 
+    weave_device_count_mobile histogram maximum key
   mode: NULLABLE
   name: sync_count_mobile_mean
   type: FLOAT
-- description: null
+- description: Daily sum of desktop sync device counts from 
+    weave_device_count_desktop, aggregated across pings
   mode: NULLABLE
   name: sync_count_desktop_sum
   type: INTEGER
-- description: null
+- description: Daily sum of mobile sync device counts from 
+    weave_device_count_mobile, aggregated across pings
   mode: NULLABLE
   name: sync_count_mobile_sum
   type: INTEGER
-- description: null
+- description: Boolean flag from environment.settings.telemetry_enabled 
+    indicating whether telemetry data collection is active
   mode: NULLABLE
   name: telemetry_enabled
   type: BOOLEAN
-- description: null
+- description: Client timezone offset in minutes from UTC from 
+    payload.info.timezone_offset, used for temporal analysis
   mode: NULLABLE
   name: timezone_offset
   type: INTEGER
-- description: null
+- description: Total elapsed time in hours from payload.info.subsession_length 
+    summed across all subsessions, including inactive time
   mode: NULLABLE
   name: total_hours_sum
   type: NUMERIC
-- description: null
+- description: Boolean flag from environment.settings.update.auto_download 
+    indicating whether Firefox updates download automatically
   mode: NULLABLE
   name: update_auto_download
   type: BOOLEAN
-- description: null
+- description: Update channel from environment.settings.update.channel, which 
+    may differ from distribution channel
   mode: NULLABLE
   name: update_channel
   type: STRING
-- description: null
+- description: Boolean flag from environment.settings.update.enabled indicating 
+    whether automatic updates are enabled
   mode: NULLABLE
   name: update_enabled
   type: BOOLEAN
-- description: null
+- description: Application vendor string from application.vendor, typically 
+    'Mozilla'
   mode: NULLABLE
   name: vendor
   type: STRING
-- description: null
+- description: Daily sum of web push notifications displayed to users from 
+    web_notification_shown histogram
   mode: NULLABLE
   name: web_notification_shown_sum
   type: INTEGER
-- description: null
+- description: Windows 10+ build number from 
+    environment.system.os.windows_build_number, providing precise Windows 
+    version identification
   mode: NULLABLE
   name: windows_build_number
   type: INTEGER
-- description: null
+- description: Windows Update Build Revision number from 
+    environment.system.os.windows_ubr, tracking Windows cumulative updates
   mode: NULLABLE
   name: windows_ubr
   type: INTEGER
-- description: null
+- description: Boolean flag indicating whether Firefox Accounts is configured 
+    from environment.services.account_enabled or fxa_configured histogram
   mode: NULLABLE
   name: fxa_configured
   type: BOOLEAN
-- description: null
+- description: Daily sum of trackers blocked by Enhanced Tracking Protection 
+    from scalar_parent_contentblocking_trackers_blocked_count
   mode: NULLABLE
   name: trackers_blocked_sum
   type: INTEGER
-- description: null
+- description: Earliest submission timestamp for pings aggregated in this row, 
+    used to determine data freshness
   mode: NULLABLE
   name: submission_timestamp_min
   type: TIMESTAMP
-- description: null
+- description: Total daily count of search result ad clicks across all engines 
+    and sources, aggregated from ad_clicks keyed scalar array
   mode: NULLABLE
   name: ad_clicks_count_all
   type: INTEGER
-- description: null
+- description: Total daily count of searches that displayed ads across all 
+    engines and sources, aggregated from search_with_ads keyed scalar array
   mode: NULLABLE
   name: search_with_ads_count_all
   type: INTEGER
-- description: null
+- description: 'Daily sum of urlbar autofill impressions for about: pages from parent
+    process scalars'
   mode: NULLABLE
   name: scalar_parent_urlbar_impression_autofill_about_sum
   type: INTEGER
-- description: null
+- description: Daily sum of urlbar adaptive autofill impressions from parent 
+    process scalars, measuring learned autofill patterns
   mode: NULLABLE
   name: scalar_parent_urlbar_impression_autofill_adaptive_sum
   type: INTEGER
-- description: null
+- description: Daily sum of urlbar origin-based autofill impressions from parent
+    process scalars
   mode: NULLABLE
   name: scalar_parent_urlbar_impression_autofill_origin_sum
   type: INTEGER
-- description: null
+- description: Daily sum of other urlbar autofill impression types from parent 
+    process scalars
   mode: NULLABLE
   name: scalar_parent_urlbar_impression_autofill_other_sum
   type: INTEGER
-- description: null
+- description: Daily sum of urlbar preloaded top sites autofill impressions from
+    parent process scalars
   mode: NULLABLE
   name: scalar_parent_urlbar_impression_autofill_preloaded_sum
   type: INTEGER
-- description: null
+- description: Daily sum of urlbar URL-based autofill impressions from parent 
+    process scalars
   mode: NULLABLE
   name: scalar_parent_urlbar_impression_autofill_url_sum
   type: INTEGER
-- description: null
+- description: Keyed scalar array with daily event counts by category from 
+    parent process telemetry
   fields:
-  - description: null
+  - description:
     mode: NULLABLE
     name: key
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: value
     type: INTEGER
   mode: REPEATED
   name: scalar_parent_telemetry_event_counts_sum
   type: RECORD
-- description: null
+- description: Keyed scalar array with daily event counts by category from 
+    content process telemetry
   fields:
-  - description: null
+  - description:
     mode: NULLABLE
     name: key
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: value
     type: INTEGER
   mode: REPEATED
   name: scalar_content_telemetry_event_counts_sum
   type: RECORD
-- description: null
+- description: Keyed scalar array with daily counts of urlbar search mode 
+    activations via bookmark menu by engine
   fields:
-  - description: null
+  - description:
     mode: NULLABLE
     name: key
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: value
     type: INTEGER
   mode: REPEATED
   name: scalar_parent_urlbar_searchmode_bookmarkmenu_sum
   type: RECORD
-- description: null
+- description: Keyed scalar array with daily counts of urlbar search mode 
+    activations via handoff by engine
   fields:
-  - description: null
+  - description:
     mode: NULLABLE
     name: key
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: value
     type: INTEGER
   mode: REPEATED
   name: scalar_parent_urlbar_searchmode_handoff_sum
   type: RECORD
-- description: null
+- description: Keyed scalar array with daily counts of urlbar search mode 
+    activations via keyword offer by engine
   fields:
-  - description: null
+  - description:
     mode: NULLABLE
     name: key
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: value
     type: INTEGER
   mode: REPEATED
   name: scalar_parent_urlbar_searchmode_keywordoffer_sum
   type: RECORD
-- description: null
+- description: Keyed scalar array with daily counts of urlbar search mode 
+    activations via one-off search buttons by engine
   fields:
-  - description: null
+  - description:
     mode: NULLABLE
     name: key
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: value
     type: INTEGER
   mode: REPEATED
   name: scalar_parent_urlbar_searchmode_oneoff_sum
   type: RECORD
-- description: null
+- description: Keyed scalar array with daily counts of other urlbar search mode 
+    activation methods by engine
   fields:
-  - description: null
+  - description:
     mode: NULLABLE
     name: key
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: value
     type: INTEGER
   mode: REPEATED
   name: scalar_parent_urlbar_searchmode_other_sum
   type: RECORD
-- description: null
+- description: Keyed scalar array with daily counts of urlbar search mode 
+    activations via keyboard shortcuts by engine
   fields:
-  - description: null
+  - description:
     mode: NULLABLE
     name: key
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: value
     type: INTEGER
   mode: REPEATED
   name: scalar_parent_urlbar_searchmode_shortcut_sum
   type: RECORD
-- description: null
+- description: Keyed scalar array with daily counts of urlbar search mode 
+    activations via tab menu by engine
   fields:
-  - description: null
+  - description:
     mode: NULLABLE
     name: key
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: value
     type: INTEGER
   mode: REPEATED
   name: scalar_parent_urlbar_searchmode_tabmenu_sum
   type: RECORD
-- description: null
+- description: Keyed scalar array with daily counts of urlbar tab-to-search 
+    feature usage by engine
   fields:
-  - description: null
+  - description:
     mode: NULLABLE
     name: key
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: value
     type: INTEGER
   mode: REPEATED
   name: scalar_parent_urlbar_searchmode_tabtosearch_sum
   type: RECORD
-- description: null
+- description: Keyed scalar array with daily counts of urlbar tab-to-search 
+    onboarding interactions by engine
   fields:
-  - description: null
+  - description:
     mode: NULLABLE
     name: key
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: value
     type: INTEGER
   mode: REPEATED
   name: scalar_parent_urlbar_searchmode_tabtosearch_onboard_sum
   type: RECORD
-- description: null
+- description: Keyed scalar array with daily counts of urlbar search mode 
+    activations from new tab top sites by engine
   fields:
-  - description: null
+  - description:
     mode: NULLABLE
     name: key
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: value
     type: INTEGER
   mode: REPEATED
   name: scalar_parent_urlbar_searchmode_topsites_newtab_sum
   type: RECORD
-- description: null
+- description: Keyed scalar array with daily counts of urlbar search mode 
+    activations from urlbar top sites by engine
   fields:
-  - description: null
+  - description:
     mode: NULLABLE
     name: key
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: value
     type: INTEGER
   mode: REPEATED
   name: scalar_parent_urlbar_searchmode_topsites_urlbar_sum
   type: RECORD
-- description: null
+- description: Keyed scalar array with daily counts of urlbar search mode 
+    activations via macOS Touch Bar by engine
   fields:
-  - description: null
+  - description:
     mode: NULLABLE
     name: key
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: value
     type: INTEGER
   mode: REPEATED
   name: scalar_parent_urlbar_searchmode_touchbar_sum
   type: RECORD
-- description: null
+- description: Keyed scalar array with daily counts of urlbar search mode 
+    activations via direct typing by engine
   fields:
-  - description: null
+  - description:
     mode: NULLABLE
     name: key
     type: STRING
-  - description: null
+  - description:
     mode: NULLABLE
     name: value
     type: INTEGER
@@ -1105,30 +1346,48 @@ fields:
 - mode: NULLABLE
   name: scalar_parent_os_environment_is_taskbar_pinned
   type: BOOLEAN
+  description: Boolean flag indicating whether Firefox is pinned to Windows 
+    taskbar from parent process scalars
 - mode: NULLABLE
   name: scalar_parent_os_environment_launched_via_desktop
   type: BOOLEAN
+  description: Boolean flag indicating whether Firefox was launched from desktop
+    shortcut from parent process scalars
 - mode: NULLABLE
   name: scalar_parent_os_environment_launched_via_taskbar
   type: BOOLEAN
+  description: Boolean flag indicating whether Firefox was launched from taskbar
+    from parent process scalars
 - mode: NULLABLE
   name: scalar_parent_os_environment_launched_via_other
   type: BOOLEAN
+  description: Boolean flag indicating whether Firefox was launched via other 
+    methods from parent process scalars
 - mode: NULLABLE
   name: scalar_parent_os_environment_launched_via_start_menu
   type: BOOLEAN
+  description: Boolean flag indicating whether Firefox was launched from Start 
+    Menu from parent process scalars
 - mode: NULLABLE
   name: scalar_parent_os_environment_launched_via_other_shortcut
   type: BOOLEAN
+  description: Boolean flag indicating whether Firefox was launched from other 
+    shortcut types from parent process scalars
 - mode: NULLABLE
   name: search_count_webextension
   type: INTEGER
+  description: Daily sum of searches initiated via WebExtension APIs, aggregated
+    from search_counts array
 - mode: NULLABLE
   name: search_count_alias
   type: INTEGER
+  description: Daily sum of searches initiated using search keyword aliases, 
+    aggregated from search_counts array
 - mode: NULLABLE
   name: search_count_urlbar_searchmode
   type: INTEGER
+  description: Daily sum of searches initiated in urlbar search mode, aggregated
+    from search_counts array
 - fields:
   - mode: NULLABLE
     name: key
@@ -1139,6 +1398,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_browser_ui_interaction_preferences_pane_home_sum
   type: RECORD
+  description: Keyed scalar array with daily counts of interactions with home 
+    pane preferences by interaction type
 - fields:
   - mode: NULLABLE
     name: key
@@ -1149,6 +1410,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_urlbar_picked_autofill_sum
   type: RECORD
+  description: Keyed scalar array with daily counts of autofill result 
+    selections from urlbar by result type
 - fields:
   - mode: NULLABLE
     name: key
@@ -1159,6 +1422,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_urlbar_picked_autofill_about_sum
   type: RECORD
+  description: 'Keyed scalar array with daily counts of about: page autofill selections
+    from urlbar'
 - fields:
   - mode: NULLABLE
     name: key
@@ -1169,6 +1434,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_urlbar_picked_autofill_adaptive_sum
   type: RECORD
+  description: Keyed scalar array with daily counts of adaptive autofill 
+    selections from urlbar
 - fields:
   - mode: NULLABLE
     name: key
@@ -1179,6 +1446,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_urlbar_picked_autofill_origin_sum
   type: RECORD
+  description: Keyed scalar array with daily counts of origin-based autofill 
+    selections from urlbar
 - fields:
   - mode: NULLABLE
     name: key
@@ -1189,6 +1458,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_urlbar_picked_autofill_other_sum
   type: RECORD
+  description: Keyed scalar array with daily counts of other autofill type 
+    selections from urlbar
 - fields:
   - mode: NULLABLE
     name: key
@@ -1199,6 +1470,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_urlbar_picked_autofill_preloaded_sum
   type: RECORD
+  description: Keyed scalar array with daily counts of preloaded top site 
+    autofill selections from urlbar
 - fields:
   - mode: NULLABLE
     name: key
@@ -1209,6 +1482,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_urlbar_picked_autofill_url_sum
   type: RECORD
+  description: Keyed scalar array with daily counts of URL-based autofill 
+    selections from urlbar
 - fields:
   - mode: NULLABLE
     name: key
@@ -1219,6 +1494,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_urlbar_picked_bookmark_sum
   type: RECORD
+  description: Keyed scalar array with daily counts of bookmark result 
+    selections from urlbar
 - fields:
   - mode: NULLABLE
     name: key
@@ -1229,6 +1506,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_urlbar_picked_dynamic_sum
   type: RECORD
+  description: Keyed scalar array with daily counts of dynamic result selections
+    from urlbar
 - fields:
   - mode: NULLABLE
     name: key
@@ -1239,6 +1518,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_urlbar_picked_extension_sum
   type: RECORD
+  description: Keyed scalar array with daily counts of extension-provided result
+    selections from urlbar
 - fields:
   - mode: NULLABLE
     name: key
@@ -1249,6 +1530,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_urlbar_picked_formhistory_sum
   type: RECORD
+  description: Keyed scalar array with daily counts of form history result 
+    selections from urlbar
 - fields:
   - mode: NULLABLE
     name: key
@@ -1259,6 +1542,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_urlbar_picked_history_sum
   type: RECORD
+  description: Keyed scalar array with daily counts of history result selections
+    from urlbar
 - fields:
   - mode: NULLABLE
     name: key
@@ -1269,6 +1554,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_urlbar_picked_keyword_sum
   type: RECORD
+  description: Keyed scalar array with daily counts of keyword search result 
+    selections from urlbar
 - fields:
   - mode: NULLABLE
     name: key
@@ -1279,6 +1566,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_urlbar_picked_remotetab_sum
   type: RECORD
+  description: Keyed scalar array with daily counts of Sync remote tab result 
+    selections from urlbar
 - fields:
   - mode: NULLABLE
     name: key
@@ -1289,6 +1578,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_urlbar_picked_searchengine_sum
   type: RECORD
+  description: Keyed scalar array with daily counts of search engine result 
+    selections from urlbar
 - fields:
   - mode: NULLABLE
     name: key
@@ -1299,6 +1590,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_urlbar_picked_searchsuggestion_sum
   type: RECORD
+  description: Keyed scalar array with daily counts of search suggestion result 
+    selections from urlbar
 - fields:
   - mode: NULLABLE
     name: key
@@ -1309,6 +1602,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_urlbar_picked_switchtab_sum
   type: RECORD
+  description: Keyed scalar array with daily counts of switch-to-tab result 
+    selections from urlbar
 - fields:
   - mode: NULLABLE
     name: key
@@ -1319,6 +1614,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_urlbar_picked_tabtosearch_sum
   type: RECORD
+  description: Keyed scalar array with daily counts of tab-to-search result 
+    selections from urlbar
 - fields:
   - mode: NULLABLE
     name: key
@@ -1329,6 +1626,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_urlbar_picked_tip_sum
   type: RECORD
+  description: Keyed scalar array with daily counts of tip/intervention result 
+    selections from urlbar
 - fields:
   - mode: NULLABLE
     name: key
@@ -1339,6 +1638,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_urlbar_picked_topsite_sum
   type: RECORD
+  description: Keyed scalar array with daily counts of top site result 
+    selections from urlbar
 - fields:
   - mode: NULLABLE
     name: key
@@ -1349,6 +1650,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_urlbar_picked_unknown_sum
   type: RECORD
+  description: Keyed scalar array with daily counts of unknown result type 
+    selections from urlbar
 - fields:
   - mode: NULLABLE
     name: key
@@ -1359,21 +1662,34 @@ fields:
   mode: REPEATED
   name: scalar_parent_urlbar_picked_visiturl_sum
   type: RECORD
+  description: Keyed scalar array with daily counts of visit URL result 
+    selections from urlbar
 - mode: NULLABLE
   name: default_private_search_engine
   type: STRING
+  description: Name identifier of the default search engine for private browsing
+    mode from environment.settings.default_private_search_engine
 - mode: NULLABLE
   name: default_private_search_engine_data_load_path
   type: STRING
+  description: File system path where private browsing search engine 
+    configuration was loaded from 
+    environment.settings.default_private_search_engine_data.load_path
 - mode: NULLABLE
   name: default_private_search_engine_data_name
   type: STRING
+  description: Human-readable name of private browsing default search engine 
+    from environment.settings.default_private_search_engine_data.name
 - mode: NULLABLE
   name: default_private_search_engine_data_origin
   type: STRING
+  description: Origin source of private browsing search engine configuration 
+    from environment.settings.default_private_search_engine_data.origin
 - mode: NULLABLE
   name: default_private_search_engine_data_submission_url
   type: STRING
+  description: Search submission URL for private browsing default search engine 
+    from environment.settings.default_private_search_engine_data.submission_url
 - fields:
   - mode: NULLABLE
     name: engine
@@ -1387,9 +1703,14 @@ fields:
   mode: REPEATED
   name: search_counts
   type: RECORD
+  description: Array of search count records with engine name, source (entry 
+    point), and count from payload.keyed_histograms.search_counts, providing 
+    detailed search attribution
 - mode: NULLABLE
   name: user_pref_browser_search_region
   type: STRING
+  description: User's browser search region setting indicating geographic search
+    market preferences
 - fields:
   - mode: NULLABLE
     name: key
@@ -1400,6 +1721,8 @@ fields:
   mode: REPEATED
   name: search_with_ads
   type: RECORD
+  description: Keyed array of searches that displayed advertisements by search 
+    engine and source from parent process keyed scalars
 - fields:
   - mode: NULLABLE
     name: key
@@ -1410,6 +1733,8 @@ fields:
   mode: REPEATED
   name: ad_clicks
   type: RECORD
+  description: Keyed array of advertisement clicks from search results by search
+    engine and source from parent process keyed scalars
 - fields:
   - mode: NULLABLE
     name: key
@@ -1420,6 +1745,7 @@ fields:
   mode: REPEATED
   name: search_content_urlbar_sum
   type: RECORD
+  description: Keyed array with daily search counts from urlbar by search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1430,6 +1756,8 @@ fields:
   mode: REPEATED
   name: search_content_urlbar_handoff_sum
   type: RECORD
+  description: Keyed array with daily handoff search counts from urlbar by 
+    search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1440,6 +1768,8 @@ fields:
   mode: REPEATED
   name: search_content_urlbar_persisted_sum
   type: RECORD
+  description: Keyed array with daily persisted urlbar search counts by search 
+    engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1450,6 +1780,8 @@ fields:
   mode: REPEATED
   name: search_content_urlbar_searchmode_sum
   type: RECORD
+  description: Keyed array with daily urlbar search mode search counts by search
+    engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1460,6 +1792,8 @@ fields:
   mode: REPEATED
   name: search_content_contextmenu_sum
   type: RECORD
+  description: Keyed array with daily context menu search counts by search 
+    engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1470,6 +1804,7 @@ fields:
   mode: REPEATED
   name: search_content_about_home_sum
   type: RECORD
+  description: Keyed array with daily about:home search counts by search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1480,6 +1815,8 @@ fields:
   mode: REPEATED
   name: search_content_about_newtab_sum
   type: RECORD
+  description: Keyed array with daily about:newtab search counts by search 
+    engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1490,6 +1827,7 @@ fields:
   mode: REPEATED
   name: search_content_searchbar_sum
   type: RECORD
+  description: Keyed array with daily search bar search counts by search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1500,6 +1838,8 @@ fields:
   mode: REPEATED
   name: search_content_system_sum
   type: RECORD
+  description: Keyed array with daily system integration search counts by search
+    engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1510,6 +1850,8 @@ fields:
   mode: REPEATED
   name: search_content_webextension_sum
   type: RECORD
+  description: Keyed array with daily WebExtension search counts by search 
+    engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1520,6 +1862,7 @@ fields:
   mode: REPEATED
   name: search_content_tabhistory_sum
   type: RECORD
+  description: Keyed array with daily tab history search counts by search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1530,6 +1873,7 @@ fields:
   mode: REPEATED
   name: search_content_reload_sum
   type: RECORD
+  description: Keyed array with daily page reload search counts by search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1540,6 +1884,8 @@ fields:
   mode: REPEATED
   name: search_content_unknown_sum
   type: RECORD
+  description: Keyed array with daily unknown source search counts by search 
+    engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1550,6 +1896,8 @@ fields:
   mode: REPEATED
   name: search_withads_urlbar_sum
   type: RECORD
+  description: Keyed array with daily urlbar searches that showed ads by search 
+    engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1560,6 +1908,8 @@ fields:
   mode: REPEATED
   name: search_withads_urlbar_handoff_sum
   type: RECORD
+  description: Keyed array with daily urlbar handoff searches that showed ads by
+    search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1570,6 +1920,8 @@ fields:
   mode: REPEATED
   name: search_withads_urlbar_persisted_sum
   type: RECORD
+  description: Keyed array with daily persisted urlbar searches that showed ads 
+    by search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1580,6 +1932,8 @@ fields:
   mode: REPEATED
   name: search_withads_urlbar_searchmode_sum
   type: RECORD
+  description: Keyed array with daily urlbar search mode searches that showed 
+    ads by search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1590,6 +1944,8 @@ fields:
   mode: REPEATED
   name: search_withads_contextmenu_sum
   type: RECORD
+  description: Keyed array with daily context menu searches that showed ads by 
+    search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1600,6 +1956,8 @@ fields:
   mode: REPEATED
   name: search_withads_about_home_sum
   type: RECORD
+  description: Keyed array with daily about:home searches that showed ads by 
+    search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1610,6 +1968,8 @@ fields:
   mode: REPEATED
   name: search_withads_about_newtab_sum
   type: RECORD
+  description: Keyed array with daily about:newtab searches that showed ads by 
+    search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1620,6 +1980,8 @@ fields:
   mode: REPEATED
   name: search_withads_searchbar_sum
   type: RECORD
+  description: Keyed array with daily search bar searches that showed ads by 
+    search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1630,6 +1992,8 @@ fields:
   mode: REPEATED
   name: search_withads_system_sum
   type: RECORD
+  description: Keyed array with daily system searches that showed ads by search 
+    engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1640,6 +2004,8 @@ fields:
   mode: REPEATED
   name: search_withads_webextension_sum
   type: RECORD
+  description: Keyed array with daily WebExtension searches that showed ads by 
+    search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1650,6 +2016,8 @@ fields:
   mode: REPEATED
   name: search_withads_tabhistory_sum
   type: RECORD
+  description: Keyed array with daily tab history searches that showed ads by 
+    search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1660,6 +2028,8 @@ fields:
   mode: REPEATED
   name: search_withads_reload_sum
   type: RECORD
+  description: Keyed array with daily reload searches that showed ads by search 
+    engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1670,6 +2040,8 @@ fields:
   mode: REPEATED
   name: search_withads_unknown_sum
   type: RECORD
+  description: Keyed array with daily unknown source searches that showed ads by
+    search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1680,6 +2052,8 @@ fields:
   mode: REPEATED
   name: search_adclicks_urlbar_sum
   type: RECORD
+  description: Keyed array with daily ad clicks from urlbar searches by search 
+    engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1690,6 +2064,8 @@ fields:
   mode: REPEATED
   name: search_adclicks_urlbar_handoff_sum
   type: RECORD
+  description: Keyed array with daily ad clicks from urlbar handoff searches by 
+    search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1700,6 +2076,8 @@ fields:
   mode: REPEATED
   name: search_adclicks_urlbar_persisted_sum
   type: RECORD
+  description: Keyed array with daily ad clicks from persisted urlbar searches 
+    by search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1710,6 +2088,8 @@ fields:
   mode: REPEATED
   name: search_adclicks_urlbar_searchmode_sum
   type: RECORD
+  description: Keyed array with daily ad clicks from urlbar search mode by 
+    search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1720,6 +2100,8 @@ fields:
   mode: REPEATED
   name: search_adclicks_contextmenu_sum
   type: RECORD
+  description: Keyed array with daily ad clicks from context menu searches by 
+    search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1730,6 +2112,8 @@ fields:
   mode: REPEATED
   name: search_adclicks_about_home_sum
   type: RECORD
+  description: Keyed array with daily ad clicks from about:home searches by 
+    search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1740,6 +2124,8 @@ fields:
   mode: REPEATED
   name: search_adclicks_about_newtab_sum
   type: RECORD
+  description: Keyed array with daily ad clicks from about:newtab searches by 
+    search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1750,6 +2136,7 @@ fields:
   mode: REPEATED
   name: search_adclicks_searchbar_sum
   type: RECORD
+  description: Keyed array with daily ad clicks from search bar by search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1760,6 +2147,8 @@ fields:
   mode: REPEATED
   name: search_adclicks_system_sum
   type: RECORD
+  description: Keyed array with daily ad clicks from system searches by search 
+    engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1770,6 +2159,8 @@ fields:
   mode: REPEATED
   name: search_adclicks_webextension_sum
   type: RECORD
+  description: Keyed array with daily ad clicks from WebExtension searches by 
+    search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1780,6 +2171,8 @@ fields:
   mode: REPEATED
   name: search_adclicks_tabhistory_sum
   type: RECORD
+  description: Keyed array with daily ad clicks from tab history searches by 
+    search engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1790,6 +2183,8 @@ fields:
   mode: REPEATED
   name: search_adclicks_reload_sum
   type: RECORD
+  description: Keyed array with daily ad clicks from reload searches by search 
+    engine
 - fields:
   - mode: NULLABLE
     name: key
@@ -1800,39 +2195,64 @@ fields:
   mode: REPEATED
   name: search_adclicks_unknown_sum
   type: RECORD
+  description: Keyed array with daily ad clicks from unknown source searches by 
+    search engine
 - mode: NULLABLE
   name: update_background
   type: BOOLEAN
+  description: Boolean flag from environment.settings.update.background 
+    indicating whether background updates are enabled
 - mode: NULLABLE
   name: user_pref_browser_search_suggest_enabled
   type: STRING
+  description: User preference string for whether search suggestions are enabled
+    in the search bar
 - mode: NULLABLE
   name: user_pref_browser_widget_in_navbar
   type: STRING
+  description: User preference string indicating whether search widget is 
+    displayed in navigation bar
 - mode: NULLABLE
   name: user_pref_browser_urlbar_suggest_searches
   type: STRING
+  description: User preference string for whether search suggestions are enabled
+    in the urlbar
 - mode: NULLABLE
   name: user_pref_browser_urlbar_show_search_suggestions_first
   type: STRING
+  description: User preference string for whether search suggestions appear 
+    before history in urlbar
 - mode: NULLABLE
   name: user_pref_browser_urlbar_suggest_quicksuggest
   type: STRING
+  description: User preference string for whether Firefox Suggest quick 
+    suggestions are enabled in urlbar
 - mode: NULLABLE
   name: user_pref_browser_urlbar_suggest_quicksuggest_sponsored
   type: STRING
+  description: User preference string for whether sponsored Firefox Suggest 
+    suggestions are enabled
 - mode: NULLABLE
   name: user_pref_browser_urlbar_quicksuggest_onboarding_dialog_choice
   type: STRING
+  description: User's choice from Firefox Suggest onboarding dialog (accepted, 
+    rejected, dismissed)
 - mode: NULLABLE
-  name: scalar_parent_browser_engagement_total_uri_count_normal_and_private_mode_sum
+  name: 
+    scalar_parent_browser_engagement_total_uri_count_normal_and_private_mode_sum
   type: INTEGER
+  description: Daily sum of total URI loads across both normal and private 
+    browsing modes from parent process scalars
 - mode: NULLABLE
   name: user_pref_browser_newtabpage_enabled
   type: STRING
+  description: User preference string indicating whether the new tab page is 
+    enabled (shows content vs blank)
 - mode: NULLABLE
   name: user_pref_app_shield_optoutstudies_enabled
   type: STRING
+  description: User preference string for whether Firefox Shield opt-out studies
+    are enabled
 - fields:
   - mode: NULLABLE
     name: key
@@ -1843,6 +2263,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_click_sum
   type: RECORD
+  description: Keyed array with daily counts of Firefox Suggest (Quick Suggest) 
+    clicks by suggestion type
 - fields:
   - mode: NULLABLE
     name: key
@@ -1853,6 +2275,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_impression_sum
   type: RECORD
+  description: Keyed array with daily counts of Firefox Suggest impressions 
+    (displays) by suggestion type
 - fields:
   - mode: NULLABLE
     name: key
@@ -1863,6 +2287,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_help_sum
   type: RECORD
+  description: Keyed array with daily counts of Firefox Suggest help button 
+    clicks by suggestion type
 - fields:
   - mode: NULLABLE
     name: key
@@ -1873,6 +2299,8 @@ fields:
   mode: REPEATED
   name: contextual_services_topsites_click_sum
   type: RECORD
+  description: Keyed array with daily counts of sponsored top sites clicks by 
+    tile position and sponsor
 - fields:
   - mode: NULLABLE
     name: key
@@ -1883,18 +2311,28 @@ fields:
   mode: REPEATED
   name: contextual_services_topsites_impression_sum
   type: RECORD
+  description: Keyed array with daily counts of sponsored top sites impressions 
+    by tile position and sponsor
 - mode: NULLABLE
   name: user_pref_browser_urlbar_suggest_quicksuggest_nonsponsored
   type: STRING
+  description: User preference string for whether non-sponsored Firefox Suggest 
+    suggestions are enabled
 - mode: NULLABLE
   name: user_pref_browser_urlbar_quicksuggest_data_collection_enabled
   type: STRING
+  description: User preference string for whether Firefox Suggest data 
+    collection for personalization is enabled
 - mode: NULLABLE
   name: scalar_a11y_hcm_foreground
   type: INTEGER
+  description: High contrast mode foreground color value from accessibility 
+    scalars, indicating contrast theme usage
 - mode: NULLABLE
   name: scalar_a11y_hcm_background
   type: INTEGER
+  description: High contrast mode background color value from accessibility 
+    scalars, indicating contrast theme usage
 - fields:
   - mode: NULLABLE
     name: key
@@ -1905,6 +2343,8 @@ fields:
   mode: REPEATED
   name: a11y_theme
   type: RECORD
+  description: Keyed array with boolean flags for active accessibility themes 
+    (high contrast, dark mode, etc.)
 - fields:
   - mode: NULLABLE
     name: key
@@ -1915,6 +2355,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_help_nonsponsored_bestmatch_sum
   type: RECORD
+  description: Keyed array with daily counts of help button clicks on 
+    non-sponsored best match suggestions
 - fields:
   - mode: NULLABLE
     name: key
@@ -1925,6 +2367,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_help_sponsored_bestmatch_sum
   type: RECORD
+  description: Keyed array with daily counts of help button clicks on sponsored 
+    best match suggestions
 - fields:
   - mode: NULLABLE
     name: key
@@ -1935,6 +2379,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_block_nonsponsored_sum
   type: RECORD
+  description: Keyed array with daily counts of non-sponsored Firefox Suggest 
+    suggestion dismissals
 - fields:
   - mode: NULLABLE
     name: key
@@ -1945,6 +2391,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_block_sponsored_sum
   type: RECORD
+  description: Keyed array with daily counts of sponsored Firefox Suggest 
+    suggestion dismissals
 - fields:
   - mode: NULLABLE
     name: key
@@ -1955,6 +2403,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_block_sponsored_bestmatch_sum
   type: RECORD
+  description: Keyed array with daily counts of sponsored best match suggestion 
+    dismissals
 - fields:
   - mode: NULLABLE
     name: key
@@ -1965,6 +2415,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_block_nonsponsored_bestmatch_sum
   type: RECORD
+  description: Keyed array with daily counts of non-sponsored best match 
+    suggestion dismissals
 - fields:
   - mode: NULLABLE
     name: key
@@ -1975,6 +2427,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_click_sponsored_bestmatch_sum
   type: RECORD
+  description: Keyed array with daily counts of sponsored best match suggestion 
+    clicks
 - fields:
   - mode: NULLABLE
     name: key
@@ -1985,6 +2439,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_click_nonsponsored_bestmatch_sum
   type: RECORD
+  description: Keyed array with daily counts of non-sponsored best match 
+    suggestion clicks
 - fields:
   - mode: NULLABLE
     name: key
@@ -1995,6 +2451,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_impression_sponsored_bestmatch_sum
   type: RECORD
+  description: Keyed array with daily counts of sponsored best match suggestion 
+    impressions
 - fields:
   - mode: NULLABLE
     name: key
@@ -2005,18 +2463,28 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_impression_nonsponsored_bestmatch_sum
   type: RECORD
+  description: Keyed array with daily counts of non-sponsored best match 
+    suggestion impressions
 - mode: NULLABLE
   name: user_pref_browser_urlbar_suggest_bestmatch
   type: STRING
+  description: User preference string for whether best match suggestions are 
+    enabled in urlbar
 - mode: NULLABLE
   name: scalar_parent_browser_ui_interaction_textrecognition_error_sum
   type: INTEGER
+  description: Daily sum of text recognition feature errors from parent process 
+    scalars
 - mode: NULLABLE
   name: text_recognition_interaction_timing_sum
   type: INTEGER
+  description: Daily sum of text recognition interaction timing measurements in 
+    milliseconds from histogram
 - mode: NULLABLE
   name: text_recognition_interaction_timing_count_sum
   type: INTEGER
+  description: Daily count of text recognition interaction timing samples from 
+    histogram
 - fields:
   - mode: NULLABLE
     name: key
@@ -2027,75 +2495,122 @@ fields:
   mode: REPEATED
   name: scalar_parent_browser_ui_interaction_content_context_sum
   type: RECORD
+  description: Keyed array with daily counts of content context menu 
+    interactions by action type
 - mode: NULLABLE
   name: text_recognition_api_performance_sum
   type: INTEGER
+  description: Daily sum of text recognition API performance measurements in 
+    milliseconds from histogram
 - mode: NULLABLE
   name: text_recognition_api_performance_count_sum
   type: INTEGER
+  description: Daily count of text recognition API performance samples from 
+    histogram
 - mode: NULLABLE
   name: text_recognition_text_length_sum
   type: INTEGER
+  description: Daily sum of recognized text lengths in characters from histogram
 - mode: NULLABLE
   name: text_recognition_text_length_count_sum
   type: INTEGER
+  description: Daily count of text recognition text length samples from 
+    histogram
 - mode: NULLABLE
   name: places_searchbar_cumulative_searches_sum
   type: INTEGER
+  description: Daily sum of cumulative Places library searches from histogram, 
+    measuring history/bookmark search usage
 - mode: NULLABLE
   name: places_searchbar_cumulative_filter_count_sum
   type: INTEGER
+  description: Daily sum of cumulative Places search filters applied from 
+    histogram
 - mode: NULLABLE
   name: scalar_parent_os_environment_launched_via_taskbar_private
   type: BOOLEAN
+  description: Boolean flag indicating whether Firefox was launched in private 
+    mode from taskbar
 - mode: NULLABLE
   name: dom_parentprocess_private_window_used
   type: BOOLEAN
+  description: Boolean flag indicating whether a private browsing window was 
+    used during the day
 - mode: NULLABLE
   name: os_environment_is_taskbar_pinned_any
   type: BOOLEAN
+  description: Boolean flag indicating whether any Firefox shortcut (normal or 
+    private) is pinned to taskbar
 - mode: NULLABLE
   name: os_environment_is_taskbar_pinned_private_any
   type: BOOLEAN
+  description: Boolean flag indicating whether a private browsing shortcut is 
+    pinned to taskbar
 - mode: NULLABLE
   name: os_environment_is_taskbar_pinned_private
   type: BOOLEAN
+  description: Boolean flag indicating whether Firefox private mode is pinned to
+    taskbar
 - mode: NULLABLE
   name: bookmark_migrations_quantity_chrome
   type: INTEGER
+  description: Count of bookmarks migrated from Google Chrome during the day 
+    from fx_migration_bookmarks_quantity keyed histogram
 - mode: NULLABLE
   name: bookmark_migrations_quantity_edge
   type: INTEGER
+  description: Count of bookmarks migrated from Microsoft Edge during the day 
+    from fx_migration_bookmarks_quantity keyed histogram
 - mode: NULLABLE
   name: bookmark_migrations_quantity_safari
   type: INTEGER
+  description: Count of bookmarks migrated from Safari during the day from 
+    fx_migration_bookmarks_quantity keyed histogram
 - mode: NULLABLE
   name: bookmark_migrations_quantity_all
   type: INTEGER
+  description: Total count of bookmarks migrated from all browsers during the 
+    day, sum of Chrome, Edge, and Safari migrations
 - mode: NULLABLE
   name: history_migrations_quantity_chrome
   type: INTEGER
+  description: Count of history entries migrated from Google Chrome during the 
+    day from fx_migration_history_quantity keyed histogram
 - mode: NULLABLE
   name: history_migrations_quantity_edge
   type: INTEGER
+  description: Count of history entries migrated from Microsoft Edge during the 
+    day from fx_migration_history_quantity keyed histogram
 - mode: NULLABLE
   name: history_migrations_quantity_safari
   type: INTEGER
+  description: Count of history entries migrated from Safari during the day from
+    fx_migration_history_quantity keyed histogram
 - mode: NULLABLE
   name: history_migrations_quantity_all
   type: INTEGER
+  description: Total count of history entries migrated from all browsers during 
+    the day
 - mode: NULLABLE
   name: logins_migrations_quantity_chrome
   type: INTEGER
+  description: Count of saved logins migrated from Google Chrome during the day 
+    from fx_migration_logins_quantity keyed histogram
 - mode: NULLABLE
   name: logins_migrations_quantity_edge
   type: INTEGER
+  description: Count of saved logins migrated from Microsoft Edge during the day
+    from fx_migration_logins_quantity keyed histogram
 - mode: NULLABLE
   name: logins_migrations_quantity_safari
   type: INTEGER
+  description: Count of saved logins migrated from Safari during the day from 
+    fx_migration_logins_quantity keyed histogram
 - mode: NULLABLE
   name: logins_migrations_quantity_all
   type: INTEGER
+  description: Total count of saved logins migrated from all browsers during the
+    day
 - mode: NULLABLE
   name: media_play_time_ms_audio_sum
   type: INTEGER
@@ -2112,6 +2627,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_block_dynamic_wikipedia_sum
   type: RECORD
+  description: Keyed array with daily counts of dynamic Wikipedia suggestion 
+    dismissals from Firefox Suggest
 - fields:
   - mode: NULLABLE
     name: key
@@ -2122,6 +2639,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_block_weather_sum
   type: RECORD
+  description: Keyed array with daily counts of weather suggestion dismissals 
+    from Firefox Suggest
 - fields:
   - mode: NULLABLE
     name: key
@@ -2132,6 +2651,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_click_dynamic_wikipedia_sum
   type: RECORD
+  description: Keyed array with daily counts of dynamic Wikipedia suggestion 
+    clicks from Firefox Suggest
 - fields:
   - mode: NULLABLE
     name: key
@@ -2142,6 +2663,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_click_nonsponsored_sum
   type: RECORD
+  description: Keyed array with daily counts of non-sponsored Firefox Suggest 
+    suggestion clicks
 - fields:
   - mode: NULLABLE
     name: key
@@ -2152,6 +2675,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_click_sponsored_sum
   type: RECORD
+  description: Keyed array with daily counts of sponsored Firefox Suggest 
+    suggestion clicks
 - fields:
   - mode: NULLABLE
     name: key
@@ -2162,6 +2687,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_click_weather_sum
   type: RECORD
+  description: Keyed array with daily counts of weather suggestion clicks from 
+    Firefox Suggest
 - fields:
   - mode: NULLABLE
     name: key
@@ -2172,6 +2699,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_help_dynamic_wikipedia_sum
   type: RECORD
+  description: Keyed array with daily counts of help button clicks on dynamic 
+    Wikipedia suggestions
 - fields:
   - mode: NULLABLE
     name: key
@@ -2182,6 +2711,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_help_nonsponsored_sum
   type: RECORD
+  description: Keyed array with daily counts of help button clicks on 
+    non-sponsored suggestions
 - fields:
   - mode: NULLABLE
     name: key
@@ -2192,6 +2723,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_help_sponsored_sum
   type: RECORD
+  description: Keyed array with daily counts of help button clicks on sponsored 
+    suggestions
 - fields:
   - mode: NULLABLE
     name: key
@@ -2202,6 +2735,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_help_weather_sum
   type: RECORD
+  description: Keyed array with daily counts of help button clicks on weather 
+    suggestions
 - fields:
   - mode: NULLABLE
     name: key
@@ -2212,6 +2747,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_impression_dynamic_wikipedia_sum
   type: RECORD
+  description: Keyed array with daily counts of dynamic Wikipedia suggestion 
+    impressions
 - fields:
   - mode: NULLABLE
     name: key
@@ -2222,6 +2759,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_impression_nonsponsored_sum
   type: RECORD
+  description: Keyed array with daily counts of non-sponsored Firefox Suggest 
+    suggestion impressions
 - fields:
   - mode: NULLABLE
     name: key
@@ -2232,6 +2771,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_impression_sponsored_sum
   type: RECORD
+  description: Keyed array with daily counts of sponsored Firefox Suggest 
+    suggestion impressions
 - fields:
   - mode: NULLABLE
     name: key
@@ -2242,6 +2783,8 @@ fields:
   mode: REPEATED
   name: contextual_services_quicksuggest_impression_weather_sum
   type: RECORD
+  description: Keyed array with daily counts of weather suggestion impressions 
+    from Firefox Suggest
 - fields:
   - mode: NULLABLE
     name: key
@@ -2252,6 +2795,8 @@ fields:
   mode: REPEATED
   name: scalar_parent_sidebar_opened_sum
   type: RECORD
+  description: Keyed array with daily counts of sidebar panel openings by panel 
+    type (bookmarks, history, synced tabs)
 - fields:
   - mode: NULLABLE
     name: key
@@ -2262,6 +2807,7 @@ fields:
   mode: REPEATED
   name: scalar_parent_sidebar_search_sum
   type: RECORD
+  description: Keyed array with daily counts of sidebar searches by panel type
 - fields:
   - mode: NULLABLE
     name: key
@@ -2272,18 +2818,28 @@ fields:
   mode: REPEATED
   name: scalar_parent_sidebar_link_sum
   type: RECORD
+  description: Keyed array with daily counts of link clicks within sidebar 
+    panels by panel type
 - name: places_previousday_visits_mean
   type: FLOAT
   mode: NULLABLE
+  description: Mean count of previous day visits from Places database, measuring
+    browsing history depth
 - name: places_library_cumulative_bookmark_searches_sum
   type: INTEGER
   mode: NULLABLE
+  description: Daily sum of cumulative bookmark searches in Places Library from 
+    histogram
 - name: places_library_cumulative_history_searches_sum
   type: INTEGER
   mode: NULLABLE
+  description: Daily sum of cumulative history searches in Places Library from 
+    histogram
 - name: places_bookmarks_searchbar_cumulative_searches_sum
   type: INTEGER
   mode: NULLABLE
+  description: Daily sum of cumulative searches in bookmarks search bar from 
+    histogram
 - name: scalar_parent_library_link_sum
   type: RECORD
   mode: REPEATED
@@ -2294,6 +2850,8 @@ fields:
   - name: value
     type: INTEGER
     mode: NULLABLE
+  description: Keyed array with daily counts of link interactions in Library 
+    window by section (history, bookmarks, downloads)
 - name: scalar_parent_library_opened_sum
   type: RECORD
   mode: REPEATED
@@ -2304,6 +2862,8 @@ fields:
   - name: value
     type: INTEGER
     mode: NULLABLE
+  description: Keyed array with daily counts of Library window openings by entry
+    point and section
 - name: scalar_parent_library_search_sum
   type: RECORD
   mode: REPEATED
@@ -2314,49 +2874,80 @@ fields:
   - name: value
     type: INTEGER
     mode: NULLABLE
+  description: Keyed array with daily counts of Library search bar uses by 
+    section (history, bookmarks)
 - name: startup_profile_selection_reason_first
   type: STRING
   mode: NULLABLE
+  description: Reason for profile selection on the first ping of the day from 
+    payload.info.profile_selection_reason, used to diagnose profile management 
+    issues
 - name: first_document_id
   type: STRING
   mode: NULLABLE
+  description: Document ID of the first ping received for this client on this 
+    day, used for deduplication and ping ordering
 - name: partner_id
   type: STRING
   mode: NULLABLE
+  description: Partner identifier from environment.partner.partner_id, 
+    indicating OEM or distribution partner relationships
 - name: distribution_version
   type: STRING
   mode: NULLABLE
+  description: Version of the Firefox distribution from 
+    environment.partner.distribution_version, tracking partner build versions
 - name: distributor
   type: STRING
   mode: NULLABLE
+  description: Distributor name from environment.partner.distributor, 
+    identifying the entity that distributed Firefox
 - name: distributor_channel
   type: STRING
   mode: NULLABLE
+  description: Distribution channel from 
+    environment.partner.distributor_channel, indicating partner-specific release
+    channels
 - name: env_build_platform_version
   type: STRING
   mode: NULLABLE
+  description: Platform version at build time from 
+    environment.build.platform_version, representing Gecko platform version
 - name: env_build_xpcom_abi
   type: STRING
   mode: NULLABLE
+  description: XPCOM Application Binary Interface from 
+    environment.build.xpcom_abi, indicating binary compatibility (e.g., 
+    'x86_64-gcc3')
 - name: geo_db_version
   type: STRING
   mode: NULLABLE
+  description: Version of the GeoIP database from metadata.geo.db_version, used 
+    for geolocation accuracy tracking
 - name: apple_model_id
   type: STRING
   mode: NULLABLE
-  description: The hw.model of the hardware running this software. Mac only. e.g.
-    "MacBookPro14,1"
+  description: Apple hardware model identifier from 
+    environment.system.apple_model_id (e.g., 'MacBookPro14,1'), specific to 
+    macOS devices
 - name: max_subsession_counter
   type: INTEGER
   mode: NULLABLE
+  description: Maximum subsession counter value observed during the day from 
+    payload.info.subsession_counter, used to detect ping drops
 - name: min_subsession_counter
   type: INTEGER
   mode: NULLABLE
+  description: Minimum subsession counter value observed during the day from 
+    payload.info.subsession_counter, used to detect ping ordering
 - name: startup_profile_selection_first_ping_only
   type: STRING
   mode: NULLABLE
+  description: Profile selection reason captured only from the first ping, 
+    avoiding duplicate counting
 - name: profile_group_id
   type: STRING
   mode: NULLABLE
-  description: A UUID uniquely identifying the profile group, not shared with other
-    telemetry data.
+  description: UUID uniquely identifying the profile group from profile_group_id
+    field, used to link related profiles for shared state (not shared with other
+    telemetry for privacy)
