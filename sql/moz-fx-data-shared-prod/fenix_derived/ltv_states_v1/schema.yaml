@@ -15,7 +15,8 @@ fields:
 - name: first_seen_date
   mode: NULLABLE
   type: DATE
-  description: First submission date that this client was seen on.
+  description: First Seen Date - Date when the server first received any of the 3
+    ping types from this client
 - name: days_since_first_seen
   mode: NULLABLE
   type: INTEGER
