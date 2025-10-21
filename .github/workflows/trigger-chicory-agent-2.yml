@@ -6,7 +6,7 @@ on:
 
 jobs:
   trigger-agent:
-    if: github.event.label.name == 'generate-standard-columns'
+    if: github.event.label.name == 'generate-file-paths'
     runs-on: ubuntu-latest
     
     steps:
@@ -22,31 +22,38 @@ jobs:
               return;
             }
             
-            // Extract file paths - look for lines starting with "- sql/" or just "sql/"
             const lines = issueBody.split('\n');
-            const filePaths = lines
-              .map(line => line.trim())
-              .filter(line => {
-                // Match lines that start with "- sql/" or just "sql/"
-                return line.startsWith('- sql/') || line.startsWith('sql/');
-              })
-              .map(line => {
-                // Remove leading "- " if present
-                return line.replace(/^-\s*/, '');
-              });
+            const processedLines = [];
+            let foundAnyPath = false;
             
-            if (filePaths.length === 0) {
-              core.setFailed('No valid file paths found in issue body. Expected format: "- sql/project/dataset/table" or "sql/project/dataset/table"');
+            for (const line of lines) {
+              const trimmed = line.trim();
+              
+              if (trimmed.startsWith('* sql/') || trimmed.startsWith('- sql/') || trimmed.startsWith('sql/')) {
+                const cleanPath = trimmed.replace(/^[*-]\s*/, '');
+                processedLines.push(cleanPath);
+                foundAnyPath = true;
+              } 
+              else if (trimmed === '' && foundAnyPath) {
+                processedLines.push('');
+              }
+            }
+            
+            if (!foundAnyPath) {
+              core.setFailed('No valid file paths found in issue body. Expected format: "* sql/project/dataset/table"');
               return;
             }
             
-            console.log(`Extracted ${filePaths.length} file paths:`);
-            filePaths.forEach(path => console.log(`  - ${path}`));
+            while (processedLines.length > 0 && processedLines[processedLines.length - 1] === '') {
+              processedLines.pop();
+            }
             
-            // Join paths with newlines for the agent input
-            const pathsInput = filePaths.join('\n');
+            const pathCount = processedLines.filter(line => line !== '').length;
+            console.log(`Extracted ${pathCount} file paths with preserved spacing`);
+            
+            const pathsInput = processedLines.join('\n');
             core.setOutput('file_paths', pathsInput);
-            core.setOutput('path_count', filePaths.length);
+            core.setOutput('path_count', pathCount);
             core.setOutput('issue_number', context.payload.issue.number);
       
       - name: Add processing comment
@@ -66,21 +73,20 @@ jobs:
           CHICORY_API_KEY: ${{ secrets.CHICORY_API_KEY_1 }}
           CHICORY_PROJECT_ID: ${{ secrets.CHICORY_PROJECT_ID_1 }}
           CHICORY_AGENT_ID: ${{ secrets.CHICORY_AGENT_ID_1 }}
-          FILE_PATHS: ${{ steps.extract_paths.outputs.file_paths }}
           ISSUE_NUMBER: ${{ steps.extract_paths.outputs.issue_number }}
         run: |
-          # Create the input for the agent with issue number and file paths
+          FILE_PATHS='${{ steps.extract_paths.outputs.file_paths }}'
+          
           INPUT_TEXT="#${ISSUE_NUMBER}
           ${FILE_PATHS}"
           
           echo "Triggering agent with input:"
           echo "${INPUT_TEXT}"
+          echo "---"
           
-          # Escape the input for JSON
-          INPUT_JSON=$(jq -n --arg text "$INPUT_TEXT" '$text')
+          INPUT_JSON=$(printf '%s' "$INPUT_TEXT" | jq -Rs .)
           
-          # Call Chicory API to create a run
-          RESPONSE=$(curl -X POST https://app.chicory.ai/api/v1/projects/${CHICORY_PROJECT_ID}/runs \
+          RESPONSE=$(curl -s -X POST https://app.chicory.ai/api/v1/projects/${CHICORY_PROJECT_ID}/runs \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${CHICORY_API_KEY}" \
             -d "{
@@ -98,7 +104,6 @@ jobs:
               ]
             }")
           
-          # Extract run ID
           RUN_ID=$(echo $RESPONSE | jq -r '.run_id')
           
           if [ "$RUN_ID" != "null" ] && [ -n "$RUN_ID" ]; then
@@ -114,7 +119,6 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            // Remove generate-file-paths label
             try {
               await github.rest.issues.removeLabel({
                 owner: context.repo.owner,
@@ -136,10 +140,9 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '❌ **Failed to trigger agent**\n\nThere was an error triggering the AI agent. Please check:\n- File paths are in the correct format (- sql/project/dataset/table)\n- Chicory API credentials are configured correctly\n\nYou can check the [Action logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for more details.'
+              body: '❌ **Failed to trigger agent**\n\nThere was an error triggering the AI agent. Please check:\n- File paths are in the correct format (* sql/project/dataset/table)\n- Chicory API credentials are configured correctly\n\nYou can check the [Action logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for more details.'
             });
             
-            // Add failed label
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
