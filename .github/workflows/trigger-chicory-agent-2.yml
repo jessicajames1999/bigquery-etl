@@ -1,0 +1,148 @@
+name: Trigger Agent with File Paths
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  trigger-agent:
+    if: github.event.label.name == 'generate-standard-columns'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Extract file paths from issue
+        id: extract_paths
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const issueBody = context.payload.issue.body || '';
+            
+            if (!issueBody.trim()) {
+              core.setFailed('Issue body is empty. Please provide file paths.');
+              return;
+            }
+            
+            // Extract file paths - look for lines starting with "- sql/" or just "sql/"
+            const lines = issueBody.split('\n');
+            const filePaths = lines
+              .map(line => line.trim())
+              .filter(line => {
+                // Match lines that start with "- sql/" or just "sql/"
+                return line.startsWith('- sql/') || line.startsWith('sql/');
+              })
+              .map(line => {
+                // Remove leading "- " if present
+                return line.replace(/^-\s*/, '');
+              });
+            
+            if (filePaths.length === 0) {
+              core.setFailed('No valid file paths found in issue body. Expected format: "- sql/project/dataset/table" or "sql/project/dataset/table"');
+              return;
+            }
+            
+            console.log(`Extracted ${filePaths.length} file paths:`);
+            filePaths.forEach(path => console.log(`  - ${path}`));
+            
+            // Join paths with newlines for the agent input
+            const pathsInput = filePaths.join('\n');
+            core.setOutput('file_paths', pathsInput);
+            core.setOutput('path_count', filePaths.length);
+            core.setOutput('issue_number', context.payload.issue.number);
+      
+      - name: Add processing comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const pathCount = '${{ steps.extract_paths.outputs.path_count }}';
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `⏳ **Agent triggered!**\n\nThe AI agent has been notified to process ${pathCount} file path(s).\n\nThe agent will update this issue when complete.`
+            });
+      
+      - name: Trigger Chicory Agent
+        env:
+          CHICORY_API_KEY: ${{ secrets.CHICORY_API_KEY_1 }}
+          CHICORY_PROJECT_ID: ${{ secrets.CHICORY_PROJECT_ID_1 }}
+          CHICORY_AGENT_ID: ${{ secrets.CHICORY_AGENT_ID_1 }}
+          FILE_PATHS: ${{ steps.extract_paths.outputs.file_paths }}
+          ISSUE_NUMBER: ${{ steps.extract_paths.outputs.issue_number }}
+        run: |
+          # Create the input for the agent with issue number and file paths
+          INPUT_TEXT="#${ISSUE_NUMBER}
+          ${FILE_PATHS}"
+          
+          echo "Triggering agent with input:"
+          echo "${INPUT_TEXT}"
+          
+          # Escape the input for JSON
+          INPUT_JSON=$(jq -n --arg text "$INPUT_TEXT" '$text')
+          
+          # Call Chicory API to create a run
+          RESPONSE=$(curl -X POST https://app.chicory.ai/api/v1/projects/${CHICORY_PROJECT_ID}/runs \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${CHICORY_API_KEY}" \
+            -d "{
+              \"agent_name\": \"${CHICORY_AGENT_ID}\",
+              \"input\": [
+                {
+                  \"parts\": [
+                    {
+                      \"content_type\": \"text/plain\",
+                      \"content\": ${INPUT_JSON}
+                    }
+                  ],
+                  \"created_at\": \"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)\"
+                }
+              ]
+            }")
+          
+          # Extract run ID
+          RUN_ID=$(echo $RESPONSE | jq -r '.run_id')
+          
+          if [ "$RUN_ID" != "null" ] && [ -n "$RUN_ID" ]; then
+            echo "✓ Agent triggered successfully with run ID: ${RUN_ID}"
+          else
+            echo "✗ Failed to trigger agent"
+            echo "Response: ${RESPONSE}"
+            exit 1
+          fi
+      
+      - name: Remove trigger label
+        if: success()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // Remove generate-file-paths label
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                name: 'generate-file-paths'
+              });
+              console.log('Removed generate-file-paths label');
+            } catch (error) {
+              console.log('Label may have already been removed');
+            }
+      
+      - name: Add failure comment
+        if: failure()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ **Failed to trigger agent**\n\nThere was an error triggering the AI agent. Please check:\n- File paths are in the correct format (- sql/project/dataset/table)\n- Chicory API credentials are configured correctly\n\nYou can check the [Action logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for more details.'
+            });
+            
+            // Add failed label
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['failed']
+            });
