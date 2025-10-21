@@ -6,7 +6,7 @@ fields:
 - name: days_seen_bytes
   type: BYTES
   mode: NULLABLE
-  description: Days Seen Bytes
+  description: Days seen over the past year, represented as bytes.
 - name: days_active_bytes
   type: BYTES
   mode: NULLABLE
@@ -41,7 +41,8 @@ fields:
 - name: normalized_channel
   type: STRING
   mode: NULLABLE
-  description: The normalized channel the application is being distributed on.
+  description: 'Normalized channel name of the Firefox app (for example: releaes,
+    beta, nightly).'
 - name: normalized_os
   type: STRING
   mode: NULLABLE
@@ -49,10 +50,12 @@ fields:
 - name: normalized_os_version
   type: STRING
   mode: NULLABLE
+  description: Normalized Operating System Version
 - name: android_sdk_version
   type: STRING
   mode: NULLABLE
-  description: The optional Android specific SDK version of the software running on this hardware device.
+  description: The optional Android specific SDK version of the software running on
+    this hardware device.
 - name: locale
   type: STRING
   mode: NULLABLE
@@ -60,6 +63,7 @@ fields:
 - name: city
   type: STRING
   mode: NULLABLE
+  description: City
 - name: country
   type: STRING
   mode: NULLABLE
@@ -90,17 +94,21 @@ fields:
 - name: telemetry_sdk_build
   type: STRING
   mode: NULLABLE
-  description: The version of the Glean SDK at the time the ping was collected (e.g. 25.0.0).
+  description: The version of the Glean SDK at the time the ping was collected (e.g.
+    25.0.0).
 - name: first_seen_date
   type: DATE
   mode: NULLABLE
+  description: First Seen Date - Date when the server first received any of the 3
+    ping types from this client
 - name: is_new_profile
   type: BOOLEAN
   mode: NULLABLE
 - name: isp
   type: STRING
   mode: NULLABLE
-  description: The name of the internet service provider associated with the client's IP address.
+  description: The name of the internet service provider associated with the client's
+    IP address.
 - name: distribution_id
   type: STRING
   mode: NULLABLE

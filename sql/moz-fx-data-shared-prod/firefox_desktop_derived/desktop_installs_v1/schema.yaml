@@ -2,7 +2,7 @@ fields:
 - mode: NULLABLE
   name: submission_date
   type: DATE
-  description: The date when the ingestion edge server accepted this message
+  description: The date when the telemetry ping is received on the server side.
 - mode: NULLABLE
   name: installer_type
   type: STRING
@@ -10,7 +10,8 @@ fields:
 - mode: NULLABLE
   name: version
   type: STRING
-  description: Version of the installed product.  May be different from installer_version for a stub install.  Absent for a failed stub installation.
+  description: Version of the installed product.  May be different from installer_version
+    for a stub install.  Absent for a failed stub installation.
 - mode: NULLABLE
   name: from_msi
   type: BOOL
@@ -22,15 +23,17 @@ fields:
 - mode: NULLABLE
   name: attribution_experiment
   type: STRING
-  description: Attribution Experiment
+  description: Attribution Experiment (from clients first seen)
 - mode: NULLABLE
   name: attribution_variation
   type: STRING
-  description: Attribution Variation
+  description: Attribution Variation (from clients last seen since unavailable in
+    clients first seen)
 - mode: NULLABLE
   name: isp_name
   type: STRING
-  description: The name of the internet service provider associated with the client's IP address.
+  description: The name of the internet service provider associated with the client's
+    IP address.
 - mode: NULLABLE
   name: isp_organization
   type: STRING
@@ -42,23 +45,24 @@ fields:
 - mode: NULLABLE
   name: attribution_campaign
   type: STRING
-  description: Attribution Campaign
+  description: Attribution Campaign (from clients first seen)
 - mode: NULLABLE
   name: attribution_content
   type: STRING
-  description: Attribution Content
+  description: Attribution Content (from clients first seen)
 - mode: NULLABLE
   name: attribution_dlsource
   type: STRING
-  description: Attribution Download Source
+  description: Attribution Download Source (from clients first seen)
 - mode: NULLABLE
   name: attribution_dltoken
   type: STRING
-  description: Attribution Download Token - Unique token generated for the Firefox download
+  description: Attribution Download Token - Unique token generated for the Firefox
+    download
 - mode: NULLABLE
   name: attribution_medium
   type: STRING
-  description: Attribution Medium
+  description: Attribution Medium (from clients first seen)
 - mode: NULLABLE
   name: attribution_source
   type: STRING
@@ -66,7 +70,7 @@ fields:
 - mode: NULLABLE
   name: attribution_ua
   type: STRING
-  description: Attribution UA
+  description: Attribution UA (from clients first seen)
 - mode: NULLABLE
   name: city
   type: STRING
@@ -74,7 +78,8 @@ fields:
 - mode: NULLABLE
   name: country
   type: STRING
-  description: Country
+  description: Code of the country in which the activity took place, as determined
+    by the IP geolocation. Unknown or NULL values are normally stored as '??'.
 - mode: NULLABLE
   name: subdivision1
   type: STRING
@@ -86,11 +91,11 @@ fields:
 - mode: NULLABLE
   name: locale
   type: STRING
-  description: Locale of the installer and the installed product, in AB_CD format
+  description: Set of language- and/or country-based preferences for a user interface.
 - mode: NULLABLE
   name: os_version
   type: STRING
-  description: Windows version number in major.minor build format
+  description: Version of the operating system used by the client.
 - mode: NULLABLE
   name: build_channel
   type: STRING
@@ -102,15 +107,18 @@ fields:
 - mode: NULLABLE
   name: update_channel
   type: STRING
-  description: Value of MOZ_UPDATE_CHANNEL the installer was built with.  Generally the same as build_channel
+  description: Value of MOZ_UPDATE_CHANNEL the installer was built with.  Generally
+    the same as build_channel
 - mode: NULLABLE
   name: had_old_install
   type: BOOL
-  description: True if at least one existing installation of Firefox was found on the system prior to this installation
+  description: True if at least one existing installation of Firefox was found on
+    the system prior to this installation
 - mode: NULLABLE
   name: old_default
   type: BOOL
-  description: True if an existing Firefox installation was already set as the default browser
+  description: True if an existing Firefox installation was already set as the default
+    browser
 - mode: NULLABLE
   name: old_version
   type: STRING
@@ -118,19 +126,23 @@ fields:
 - mode: NULLABLE
   name: manual_download
   type: BOOL
-  description: True if the user clicked through the error message to the manual full installer download page
+  description: True if the user clicked through the error message to the manual full
+    installer download page
 - mode: NULLABLE
   name: silent
   type: BOOL
-  description: True if the installer was run in silent mode (either from an MSI or with command-line parameters)
+  description: True if the installer was run in silent mode (either from an MSI or
+    with command-line parameters)
 - mode: NULLABLE
   name: user_cancelled
   type: BOOL
-  description: True if the installation failed because the user cancelled it or closed the window
+  description: True if the installation failed because the user cancelled it or closed
+    the window
 - mode: NULLABLE
   name: succeeded
   type: BOOL
-  description: True if the new installation was successfully created.  If false, check the error status fields for the failure reason.
+  description: True if the new installation was successfully created.  If false, check
+    the error status fields for the failure reason.
 - mode: NULLABLE
   name: profile_cleanup_prompt
   type: STRING
@@ -138,7 +150,8 @@ fields:
 - mode: NULLABLE
   name: profile_cleanup_requested
   type: BOOL
-  description: True if profile cleanup prompt was shown and the user accepted the prompt
+  description: True if profile cleanup prompt was shown and the user accepted the
+    prompt
 - mode: NULLABLE
   name: new_default
   type: BOOL
@@ -146,11 +159,13 @@ fields:
 - mode: NULLABLE
   name: new_launched
   type: BOOL
-  description: True if the installation succeeded and we were able to launch the newly installed application
+  description: True if the installation succeeded and we were able to launch the newly
+    installed application
 - mode: NULLABLE
   name: sample_id
   type: INT64
-  description: Hashed version of client ID (if present), useful for partitioning; ranges from 0 - 99
+  description: A number, 0-99, that samples by client_id and allows filtering data
+    for analysis. It is a pipeline-generated artifact that should match between pings.
 - mode: NULLABLE
   name: install_attempts
   type: INT64
