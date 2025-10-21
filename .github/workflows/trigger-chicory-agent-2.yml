@@ -6,7 +6,7 @@ on:
 
 jobs:
   trigger-agent:
-    if: github.event.label.name == 'generate-file-paths'
+    if: github.event.label.name == 'generate-standard-columns'
     runs-on: ubuntu-latest
     
     steps:
