@@ -2,160 +2,148 @@ fields:
 - mode: NULLABLE
   name: submission_date
   type: DATE
-  description: The date when the telemetry ping is received on the server side.
+  description: Date when telemetry ping was received on the server side, used as
+    the primary time dimension for daily partitioning
 - name: first_seen_year
   type: INTEGER
   mode: NULLABLE
-  description: Year extracted from the first_seen_date, that corresponds to the date
-    when the first ping was received.
+  description: Year of the user's first ping submission, enabling cohort 
+    analysis and user retention tracking
 - name: channel
   type: STRING
   mode: NULLABLE
-  description: The normalized channel the application is being distributed on.
+  description: Firefox distribution channel (e.g., release, beta, nightly, esr) 
+    indicating the build type
 - name: app_name
   type: STRING
   mode: NULLABLE
-  description: 'App name (Firefox Desktop), if client comes from MozillaOnline distribution
-
-    then the distribution_id is appended to the app_name. If client comes from BrowserStack
-    (isp)
-
-    this is appended to the app_name.
-
-    '
+  description: 'Application identifier for Firefox Desktop, with distribution_id appended
+    for MozillaOnline and BrowserStack (ISP) distributions'
 - name: country
   type: STRING
   mode: NULLABLE
-  description: Code of the country in which the activity took place, as determined
-    by the IP geolocation. Unknown or NULL values are normally stored as '??'.
+  description: Two-letter ISO country code derived from IP geolocation, with 
+    '??' for unknown or NULL values
 - name: city
   type: STRING
   mode: NULLABLE
-  description: City reported by the client.
+  description: City name reported by the client telemetry ping for geographic 
+    analysis
 - name: locale
   type: STRING
   mode: NULLABLE
-  description: Set of language- and/or country-based preferences for a user interface.
+  description: User interface language and regional preferences (e.g., en-US, 
+    fr-FR) configured by the user
 - name: os
   type: STRING
   mode: NULLABLE
-  description: The normalized name of the operating system running at the client.
+  description: Normalized operating system name (e.g., Windows, macOS, Linux) 
+    running on the client device
 - name: os_grouped
   type: STRING
   mode: NULLABLE
-  description: Operating system group reported by the client.
+  description: High-level OS category grouping similar operating systems for 
+    aggregate analysis
 - name: os_version
   type: STRING
   mode: NULLABLE
-  description: OS version reported by the client.
+  description: Full operating system version string reported by the client
 - name: os_version_major
   type: INTEGER
   mode: NULLABLE
-  description: Major or first part of the operating system version running at the
-    client. E.g. for version "100.9.11", the major is 100.
+  description: Major version number of the OS (e.g., 100 from version 100.9.11) 
+    for trend analysis
 - name: os_version_minor
   type: INTEGER
   mode: NULLABLE
-  description: Minor part of the operating system version running at the client. E.g.
-    for version "100.9.11", the minor is 9.
+  description: Minor version number of the OS (e.g., 9 from version 100.9.11) 
+    for detailed version tracking
 - name: os_version_build
   type: STRING
   mode: NULLABLE
-  description: OS version build reported by the client.
+  description: OS build identifier providing additional version granularity 
+    beyond major and minor versions
 - name: windows_build_number
   type: INTEGER
   mode: NULLABLE
-  description: 'The optional Windows build number, reported by Windows (e.g. 22000)
-    and not set for other platforms (Windows only).'
+  description: 'Windows-specific build number (e.g., 22000) for Windows platform analysis,
+    NULL for non-Windows systems'
 - name: app_version
   type: STRING
   mode: NULLABLE
-  description: User visible version string (e.g. "1.0.3") for the browser.
+  description: Human-readable Firefox version string (e.g., 1.0.3) displayed to 
+    users
 - name: app_version_major
   type: NUMERIC
   mode: NULLABLE
-  description: 'The major version of the application version (e.g. if 123.0, then
-    123)'
+  description: 'Major version number of Firefox (e.g., 123 from version 123.0) for
+    version adoption tracking'
 - name: app_version_minor
   type: NUMERIC
   mode: NULLABLE
-  description: 'The minor version of the application version (e.g. if 123.0, then
-    0)'
+  description: 'Minor version number of Firefox (e.g., 0 from version 123.0) for point
+    release analysis'
 - name: app_version_patch_revision
   type: NUMERIC
   mode: NULLABLE
-  description: 'The patch revision number of the app version'
+  description: 'Patch revision identifier for bug fix releases within a version'
 - name: app_version_is_major_release
   type: BOOLEAN
   mode: NULLABLE
-  description: 'Boolean flag indicating if the app version was a major release'
+  description: 'Boolean flag indicating whether this version represents a major Firefox
+    release milestone'
 - name: is_default_browser
   type: BOOLEAN
   mode: NULLABLE
-  description: A flag indicating whether the browser is set as the default browser
-    on the client side.
+  description: Boolean indicating if Firefox is set as the default browser on 
+    the user's system
 - name: distribution_id
   type: STRING
   mode: NULLABLE
-  description: The distribution id associated with the install of Firefox.
+  description: Distribution partner identifier for tracking Firefox installs 
+    from specific partners or channels
 - name: activity_segment
   type: STRING
   mode: NULLABLE
-  description: Classification of users based on their browsing activity. E.g., infrequent,
-    casual, regular.
+  description: User engagement classification (e.g., infrequent, casual, 
+    regular, core) based on browsing behavior patterns
 - name: attribution_medium
   type: STRING
   mode: NULLABLE
-  description: 'Medium to which the ping should be attributed e.g. referral, firefox
-    desktop.
-
-    '
+  description: 'Marketing channel medium (e.g., referral, organic) tracking user acquisition
+    sources'
 - name: attribution_source
   type: STRING
   mode: NULLABLE
-  description: 'Source to which the ping should be attributed e.g. firefox browser,
-    search fox.
-
-    '
+  description: 'Specific acquisition source (e.g., search, partner campaign) for marketing
+    attribution analysis'
 - name: daily_users
   type: INTEGER
   mode: NULLABLE
-  description: 'Number of daily users on the submission_date (based on sending the
-    ping).
-
-    '
+  description: 'Count of unique users who submitted a ping on the submission_date,
+    aggregated by dimension groupings'
 - name: weekly_users
   type: INTEGER
   mode: NULLABLE
-  description: 'Number of weekly users on the submission_date (based on sending the
-    ping).
-
-    '
+  description: 'Count of unique users who submitted a ping in the 7 days up to and
+    including submission_date'
 - name: monthly_users
   type: INTEGER
   mode: NULLABLE
-  description: 'Number of monthly users on the submission_date (based on sending the
-    ping).
-
-    '
+  description: 'Count of unique users who submitted a ping in the 28 days up to and
+    including submission_date'
 - name: dau
   type: INTEGER
   mode: NULLABLE
-  description: 'Number of DAU (Daily Active Users) users on the submission_date (based
-    on activity).
-
-    '
+  description: 'Daily Active Users count based on activity flags indicating actual
+    browser usage on submission_date'
 - name: wau
   type: INTEGER
   mode: NULLABLE
-  description: 'Number of WAU (Weekly Active Users) users on the submission_date (based
-    on activity).
-
-    '
+  description: 'Weekly Active Users count based on activity flags indicating browser
+    usage in the past 7 days'
 - name: mau
   type: INTEGER
   mode: NULLABLE
-  description: 'Number of MAU (Monthly Active Users) users on the submission_date
-    (based on activity).
-
-    '
+  description: 'Monthly Active Users count based on activity flags indicating browser
+    usage in the past 28 days'
