@@ -8,7 +8,7 @@ labels:
   incremental: true
   table_type: client_level
 owners:
-  - gkatre@mozilla.com
+  - naji@chicory.ai
 
 bigquery:
   time_partitioning:
