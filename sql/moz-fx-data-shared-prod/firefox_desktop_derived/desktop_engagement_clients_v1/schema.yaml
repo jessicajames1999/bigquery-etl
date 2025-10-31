@@ -2,11 +2,14 @@ fields:
 - mode: NULLABLE
   name: submission_date
   type: DATE
-  description: The date when the telemetry ping is received on the server side.
+  description: The date when the telemetry ping or event data was received on the
+    server side. This is typically used as the partition key for the table.
 - mode: NULLABLE
   name: client_id
   type: STRING
-  description: A unique identifier (UUID) for the client.
+  description: A unique identifier for the user, client, or customer. Format may vary
+    by system (UUID for telemetry clients, hexadecimal for FxA accounts, integer for
+    subscription systems).
 - name: profile_group_id
   type: STRING
   mode: NULLABLE
@@ -15,20 +18,25 @@ fields:
 - mode: NULLABLE
   name: sample_id
   type: INTEGER
-  description: A number, 0-99, that samples by client_id and allows filtering data
-    for analysis. It is a pipeline-generated artifact that should match between pings.
+  description: A pipeline-generated sample ID ranging from 0-99, derived by hashing
+    client_id. Used for sampling and filtering data during analysis. This value should
+    remain consistent across pings for the same client.
 - mode: NULLABLE
   name: distribution_id
   type: STRING
-  description: The distribution id associated with the install of Firefox.
+  description: Identifier for the Firefox distribution channel or partner associated
+    with this installation. Used to track installations from specific distribution
+    agreements.
 - mode: NULLABLE
   name: locale
   type: STRING
-  description: Set of language- and/or country-based preferences for a user interface.
+  description: Language and/or country-based locale setting that defines the user's
+    interface preferences (e.g., en-US, fr-FR).
 - mode: NULLABLE
   name: app_version
   type: STRING
-  description: User visible version string (e.g. "1.0.3") for the browser.
+  description: The user-visible version string of the application (e.g., "1.0.3",
+    "115.0"). For some tables, this may represent only the major version number.
 - name: isp
   type: STRING
   mode: NULLABLE
@@ -37,15 +45,20 @@ fields:
 - name: first_seen_date
   type: DATE
   mode: NULLABLE
-  description: First Seen Date
+  description: The first date on which a client was observed submitting telemetry
+    data. This represents the earliest known activity date for the client.
 - name: attribution_campaign
   type: STRING
   mode: NULLABLE
-  description: Attribution Campaign - Derived from the UTM parameter of the same name.
+  description: Marketing campaign identifier, typically derived from the utm_campaign
+    URL parameter or attribution data. Used to track the marketing campaign associated
+    with user acquisition.
 - name: attribution_content
   type: STRING
   mode: NULLABLE
-  description: Attribution Content - Derived from the UTM parameter of the same name.
+  description: Specific content or creative variant identifier, typically derived
+    from the utm_content URL parameter. Used to differentiate similar content or links
+    within the same campaign.
 - name: attribution_dlsource
   type: STRING
   mode: NULLABLE
@@ -54,7 +67,9 @@ fields:
 - name: attribution_medium
   type: STRING
   mode: NULLABLE
-  description: Attribution Medium
+  description: Marketing channel or medium, typically derived from the utm_medium
+    URL parameter. Describes the general category of traffic source (e.g., cpc, email,
+    social, organic).
 - name: attribution_ua
   type: STRING
   mode: NULLABLE
@@ -72,11 +87,14 @@ fields:
 - name: normalized_channel
   type: STRING
   mode: NULLABLE
-  description: The normalized channel the application is being distributed on.
+  description: The release channel on which the application is distributed (e.g.,
+    release, beta, nightly, developer edition). Normalized for consistency across
+    products.
 - name: normalized_os
   type: STRING
   mode: NULLABLE
-  description: The normalized name of the operating system running at the client.
+  description: The normalized name of the operating system running on the client device
+    (e.g., Windows, macOS, iOS, Android).
 - name: normalized_os_version
   type: STRING
   mode: NULLABLE
@@ -84,8 +102,9 @@ fields:
 - name: country
   type: STRING
   mode: NULLABLE
-  description: Code of the country in which the activity took place, as determined by
-    the IP geolocation. Unknown or NULL values are normally stored as '??'.
+  description: ISO 3166-1 alpha-2 country code (two-letter abbreviation) indicating
+    the country where the activity took place, typically determined by IP geolocation.
+    Unknown or NULL values are normally stored as '??'.
 - name: is_desktop
   type: BOOLEAN
   mode: NULLABLE
@@ -93,18 +112,21 @@ fields:
 - name: is_dau
   type: BOOLEAN
   mode: NULLABLE
-  description: Flag indicating client qualifies as a "Daily Active User" on this submission
-    date
+  description: Count of Daily Active Users (DAU) or a flag indicating whether the
+    client qualifies as a daily active user. DAU typically represents unique users
+    active within a 24-hour period.
 - name: is_wau
   type: BOOLEAN
   mode: NULLABLE
-  description: Flag indicating client qualifies as a "Weekly Active User" on this
-    submission date
+  description: Count of Weekly Active Users (WAU) or a flag indicating whether the
+    client qualifies as a weekly active user. WAU typically represents unique users
+    active within a 7-day period.
 - name: is_mau
   type: BOOLEAN
   mode: NULLABLE
-  description: Flag indicating client qualifies as a "Monthly Active User" on this
-    submission date
+  description: Count of Monthly Active Users (MAU) or a flag indicating whether the
+    client qualifies as a monthly active user. MAU typically represents unique users
+    active within a 28-day or calendar month period.
 - name: legacy_telemetry_client_id
   type: STRING
   mode: NULLABLE

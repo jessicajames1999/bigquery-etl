@@ -2,19 +2,26 @@ fields:
 - name: submission_date
   type: DATE
   mode: NULLABLE
-  description: The date when the telemetry ping is received on the server side.
+  description: The date when the telemetry ping or event data was received on the
+    server side. This is typically used as the partition key for the table.
 - name: client_id
   type: STRING
   mode: NULLABLE
-  description: A unique identifier (UUID) for the client.
+  description: A unique identifier for the user, client, or customer. Format may vary
+    by system (UUID for telemetry clients, hexadecimal for FxA accounts, integer for
+    subscription systems).
 - name: sample_id
   type: INTEGER
   mode: NULLABLE
-  description: A number, 0-99, that samples by client_id and allows filtering data
-    for analysis. It is a pipeline-generated artifact that should match between pings.
+  description: A pipeline-generated sample ID ranging from 0-99, derived by hashing
+    client_id. Used for sampling and filtering data during analysis. This value should
+    remain consistent across pings for the same client.
 - name: normalized_channel
   type: STRING
   mode: NULLABLE
+  description: The release channel on which the application is distributed (e.g.,
+    release, beta, nightly, developer edition). Normalized for consistency across
+    products.
 - name: n_metrics_ping
   type: INTEGER
   mode: NULLABLE
@@ -24,16 +31,21 @@ fields:
 - name: profile_group_id
   type: STRING
   mode: NULLABLE
-  description: A UUID uniquely identifying the profile group, not shared with other telemetry data.
+  description: A UUID uniquely identifying the profile group, not shared with other
+    telemetry data.
 - name: search_with_ads_count_all
   type: INTEGER
   mode: NULLABLE
-  description: Number of searches with ads on client's last seen date in last 28 days.
+  description: Number of search queries that returned results including advertisements.
+    Used as a monetization metric.
 - name: search_count_all
   type: INTEGER
   mode: NULLABLE
-  description: Number of searches on client's last seen date in last 28 days.
+  description: Total number of searches performed by the user. This may include all
+    search types or be filtered to specific search sources depending on the table
+    context.
 - name: ad_clicks_count_all
   type: INTEGER
   mode: NULLABLE
-  description: Number of ad clicks on client's last seen date in last 28 days.
+  description: Number of clicks on advertisements. May represent total clicks, clicks
+    within a specific time period, or sponsored content clicks depending on context.

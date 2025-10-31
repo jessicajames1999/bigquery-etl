@@ -2,50 +2,53 @@ fields:
 - mode: NULLABLE
   name: submission_date
   type: DATE
-  description: |
-    Logical date corresponding to the partition (date when our server received the ping)
-    that was processed for generating the metrics.
-
+  description: The date when the telemetry ping or event data was received on the
+    server side. This is typically used as the partition key for the table.
 - mode: NULLABLE
   name: client_id
   type: STRING
-  description: |
-    A UUID uniquely identifying the client.
-
+  description: A unique identifier for the user, client, or customer. Format may vary
+    by system (UUID for telemetry clients, hexadecimal for FxA accounts, integer for
+    subscription systems).
 - mode: NULLABLE
   name: sample_id
   type: INTEGER
-  description: |
-    Hashed version of client_id (if present) useful for partitioning; ranges from 0 to 99
-
+  description: A pipeline-generated sample ID ranging from 0-99, derived by hashing
+    client_id. Used for sampling and filtering data during analysis. This value should
+    remain consistent across pings for the same client.
 - mode: NULLABLE
   name: normalized_channel
   type: STRING
-  description: |
-    Normalized channel the application is being distributed on. For example, release, beta, etc.
-
+  description: The release channel on which the application is distributed (e.g.,
+    release, beta, nightly, developer edition). Normalized for consistency across
+    products.
 - mode: NULLABLE
   name: distribution_id
   type: STRING
-  description: |
-    The distribution id associated with the install of Firefox.
-
+  description: Identifier for the Firefox distribution channel or partner associated
+    with this installation. Used to track installations from specific distribution
+    agreements.
 - mode: NULLABLE
   name: is_dau
   type: BOOLEAN
-  description: |
-    Indicates whether the client met our definition of dau on the day.
-
+  description: Count of Daily Active Users (DAU) or a flag indicating whether the
+    client qualifies as a daily active user. DAU typically represents unique users
+    active within a 24-hour period.
 - mode: NULLABLE
   name: policies_count
   type: INTEGER
-  description: |
-    A uint with the number of active enterprise policies, collected once at startup.
+  description: 'A uint with the number of active enterprise policies, collected once
+    at startup.
+
     This metric was generated to correspond to the Legacy Telemetry scalar policies.count.
 
+    '
 - mode: NULLABLE
   name: policies_is_enterprise
   type: BOOLEAN
-  description: |
-    Attempt to determine if the user is an enterprise user based on various signals.
+  description: 'Attempt to determine if the user is an enterprise user based on various
+    signals.
+
     This metric was generated to correspond to the Legacy Telemetry scalar policies.is_enterprise
+
+    '
