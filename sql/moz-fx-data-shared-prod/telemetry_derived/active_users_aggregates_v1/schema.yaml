@@ -11,17 +11,20 @@ fields:
 - mode: NULLABLE
   name: attribution_medium
   type: STRING
+  description: Attribution Medium (from clients first seen)
 - mode: NULLABLE
   name: attribution_source
   type: STRING
+  description: Attribution Source
 - mode: NULLABLE
   name: city
   type: STRING
+  description: City
 - mode: NULLABLE
   name: country
   type: STRING
-  description: Name of the country in which the activity took place, as determined
-    by the IP geolocation.
+  description: Code of the country in which the activity took place, as determined
+    by the IP geolocation. Unknown or NULL values are normally stored as '??'.
 - mode: NULLABLE
   name: distribution_id
   type: STRING
@@ -34,6 +37,7 @@ fields:
 - mode: NULLABLE
   name: app_name
   type: STRING
+  description: Name of the Firefox app.
 - mode: NULLABLE
   name: channel
   type: STRING
@@ -45,6 +49,7 @@ fields:
 - mode: NULLABLE
   name: os_version
   type: STRING
+  description: Version of the operating system used by the client.
 - mode: NULLABLE
   name: os_version_major
   type: INTEGER
@@ -62,15 +67,15 @@ fields:
 - mode: NULLABLE
   name: dau
   type: INTEGER
-  description: Daily Active Users
+  description: DAU - Daily Active User
 - mode: NULLABLE
   name: wau
   type: INTEGER
-  description: Weekly Active Users
+  description: WAU - Weekly Active User
 - mode: NULLABLE
   name: mau
   type: INTEGER
-  description: Monthly Active Users
+  description: MAU - Monthly Active User
 - mode: NULLABLE
   name: new_profiles
   type: INTEGER

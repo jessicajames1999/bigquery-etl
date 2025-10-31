@@ -57,7 +57,8 @@ fields:
 - mode: NULLABLE
   name: normalized_channel
   type: STRING
-  description: The normalized channel the application is being distributed on.
+  description: 'Normalized channel name of the Firefox app (for example: releaes,
+    beta, nightly).'
 - mode: NULLABLE
   name: normalized_os
   type: STRING
@@ -69,7 +70,8 @@ fields:
 - mode: NULLABLE
   name: country
   type: STRING
-  description: An ISO 3166-1 alpha-2 country code
+  description: Code of the country in which the activity took place, as determined
+    by the IP geolocation. Unknown or NULL values are normally stored as '??'.
 - mode: NULLABLE
   name: is_desktop
   type: BOOLEAN
