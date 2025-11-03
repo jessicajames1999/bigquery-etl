@@ -11,6 +11,8 @@ fields:
 - name: country
   type: STRING
   mode: NULLABLE
+  description: Two-letter ISO 3166-1 alpha-2 country code where the user activity
+    occurred, determined by IP geolocation (unknown values may be stored as '??')
 - name: adjust_network
   type: STRING
   mode: NULLABLE
@@ -18,7 +20,8 @@ fields:
 - name: is_default_browser
   type: BOOLEAN
   mode: NULLABLE
-  description: A flag indicating whether the browser is set as the default browser on the client side.
+  description: A flag indicating whether the browser is set as the default browser
+    on the client side.
 - name: autofill_password_detected_logins
   type: INTEGER
   mode: NULLABLE
@@ -526,6 +529,8 @@ fields:
 - name: distribution_id
   type: STRING
   mode: NULLABLE
+  description: Identifier for the Firefox distribution source or partner, associated
+    with the install and indicating where the installation originated from
 - name: top_sites_contile_click
   type: INTEGER
   mode: NULLABLE

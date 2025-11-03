@@ -10,7 +10,8 @@ fields:
 - name: app_version
   type: STRING
   mode: NULLABLE
-  description: Browser version installed on the client.
+  description: User-visible application version string in semantic versioning format
+    (e.g., '1.0.3', '99.3.3') for the browser or mobile app
 - name: channel
   type: STRING
   mode: NULLABLE
@@ -18,7 +19,8 @@ fields:
 - name: country
   type: STRING
   mode: NULLABLE
-  description: Country reported by the client.
+  description: Two-letter ISO 3166-1 alpha-2 country code where the user activity
+    occurred, determined by IP geolocation (unknown values may be stored as '??')
 - name: city
   type: STRING
   mode: NULLABLE
@@ -26,7 +28,9 @@ fields:
 - name: locale
   type: STRING
   mode: NULLABLE
-  description: Locale reported by the client, which is a combination of language and regional settings.
+  description: User's language and region preference in BCP 47 format combining language
+    code and optional country code (e.g., 'en-US', 'de', 'ru'), representing country-based
+    and language-based preferences for the user interface
 - name: os
   type: STRING
   mode: NULLABLE
@@ -54,12 +58,15 @@ fields:
 - name: dau
   type: INTEGER
   mode: NULLABLE
-  description: Count of users who reported a ping on the submission_date that qualify as active.
+  description: Count of users who reported a ping on the submission_date that qualify
+    as active.
 - name: wau
   type: INTEGER
   mode: NULLABLE
-  description: Count of users who have reported a ping over the last 7 days and qualify as active.
+  description: Count of users who have reported a ping over the last 7 days and qualify
+    as active.
 - name: mau
   type: INTEGER
   mode: NULLABLE
-  description: Count of users who have reported a ping over the last 28 days and qualify as active.
+  description: Count of users who have reported a ping over the last 28 days and qualify
+    as active.
