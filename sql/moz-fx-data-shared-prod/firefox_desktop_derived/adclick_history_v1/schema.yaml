@@ -1,9 +1,9 @@
 fields:
-- description: Unique ID for the client installation.
+- description: 'NEW DESCRIPTION: Unique identifier for the Firefox client installation'
   mode: NULLABLE
   name: client_id
   type: STRING
-- description: History of ad_clicks for a user, by submission_date
+- description: 'NEW DESCRIPTION: Historical record of advertisement clicks by date'
   fields:
   - description: The date associated with the ad_click value
     mode: NULLABLE
