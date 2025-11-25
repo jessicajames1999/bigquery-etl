@@ -1,9 +1,9 @@
 fields:
-- description: Unique ID for the client installation.
+- description: 'TEST: Updated description for client_id'
   mode: NULLABLE
   name: client_id
   type: STRING
-- description: History of ad_clicks for a user, by submission_date
+- description: 'TEST: Updated description for ad_click_history'
   fields:
   - description: The date associated with the ad_click value
     mode: NULLABLE
