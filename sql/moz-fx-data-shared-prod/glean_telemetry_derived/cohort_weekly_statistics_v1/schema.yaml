@@ -46,7 +46,7 @@ fields:
 - name: distribution_id
   type: STRING
   mode: NULLABLE
-  description: Distribution ID
+  description: Identifier for the Firefox distribution source or partner, associated with the install and indicating where the installation originated from
 - name: is_default_browser
   type: BOOLEAN
   mode: NULLABLE
